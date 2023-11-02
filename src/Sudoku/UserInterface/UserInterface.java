@@ -4,10 +4,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -17,9 +14,12 @@ import javafx.stage.Stage;
 public class UserInterface {
     private final Stage stage;
     private final Group root;
-    private final int BOARD_WIDTH_AND_HEIGHT = 576;
-    private final int WINDOW_WIDTH = 676;
-    private final int WINDOW_HEIGHT = 776;
+    private final int TILE_WIDTH_AND_HEIGHT = 64;
+    private final int TILE_SPACING = 2;
+    private final int BOX_SPACING = 4;
+    private final int BOARD_WIDTH_AND_HEIGHT = (9 * TILE_WIDTH_AND_HEIGHT) + (6 * TILE_SPACING) + (2 * BOX_SPACING);
+    private final int WINDOW_WIDTH = 694;
+    private final int WINDOW_HEIGHT = 794;
     private final Color WINDOW_BACKGROUND_COLOR = Color.rgb(168, 136, 98, 1);
     private final Color TILE_BACKGROUND_COLOR = Color.WHEAT;
 
@@ -30,13 +30,13 @@ public class UserInterface {
     }
 
     private void initializeUserInterface() {
+        // Create VBox to vertically stack elements
         VBox sudokuElements = new VBox();
         sudokuElements.setAlignment(Pos.CENTER);
 
         drawBackground(root);
         drawTitle(sudokuElements);
         drawSudokuBoard(sudokuElements);
-        drawGridLines(sudokuElements);
 
         root.getChildren().add(sudokuElements);
         stage.show();
@@ -63,14 +63,15 @@ public class UserInterface {
     }
 
     private void drawSudokuBoard(Pane root) {
-        GridPane boxGrid = new GridPane(100, 100);
+        StackPane board = new StackPane();
+        GridPane boxGrid = new GridPane();
         int boxGridWidthAndHeight = 3;
 
         boxGrid.setAlignment(Pos.CENTER);
 
-        // Set spacing between boxes to 3 pixels
-        boxGrid.setHgap(3);
-        boxGrid.setVgap(3);
+        // Set spacing between boxes
+        boxGrid.setHgap(BOX_SPACING);
+        boxGrid.setVgap(BOX_SPACING);
 
         // Create a 3x3 grid of boxes
         for (int row = 0; row < boxGridWidthAndHeight; row++) {
@@ -80,11 +81,12 @@ public class UserInterface {
         }
 
         // Add the boxGrid to the board
-        root.getChildren().add(boxGrid);
-    }
+        board.getChildren().add(boxGrid);
 
-    private void drawGridLines(Pane root) {
+        // Draw the grid lines
+        drawGridLines(board);
 
+        root.getChildren().add(board);
     }
 
     // Indices will be used for alternating tile colors
@@ -92,9 +94,9 @@ public class UserInterface {
         GridPane box = new GridPane();
         int boxWidthAndHeight = 3;
 
-        // Set spacing between tiles to 2 pixels
-        box.setHgap(2);
-        box.setVgap(2);
+        // Set spacing between tiles
+        box.setHgap(TILE_SPACING);
+        box.setVgap(TILE_SPACING);
 
         // Create one 3x3 box of 9 tiles
         for (int row = 0; row < boxWidthAndHeight; row++) {
@@ -107,5 +109,69 @@ public class UserInterface {
 
         // Add the box to the boxGrid
         root.add(box, xIndex, yIndex);
+    }
+
+    private void drawGridLines(Pane board) {
+        drawHorizontalGridLines(board);
+        drawVerticalGridLines(board);
+    }
+
+    private void drawHorizontalGridLines(Pane board) {
+        VBox horizontalGridLines = new VBox();
+        int totalGridLines = 8;
+
+        horizontalGridLines.setPadding(new Insets(TILE_WIDTH_AND_HEIGHT));
+        horizontalGridLines.setSpacing(TILE_WIDTH_AND_HEIGHT);
+
+        // Draw the horizontal grid lines
+        drawLines(horizontalGridLines, false);
+
+        // Add the horizontal grid lines to the board
+        board.getChildren().add(horizontalGridLines);
+    }
+
+    private void drawVerticalGridLines(Pane board) {
+        HBox verticalGridLines = new HBox();
+        int totalGridLines = 8;
+
+        verticalGridLines.setAlignment(Pos.CENTER);
+        verticalGridLines.setSpacing(TILE_WIDTH_AND_HEIGHT);
+
+        // Draw the vertical grid lines
+        drawLines(verticalGridLines, true);
+
+        // Add the horizontal grid lines to the board
+        board.getChildren().add(verticalGridLines);
+    }
+
+    private void drawLines(Pane gridLines, boolean isVertical) {
+        int totalGridLines = 8;
+
+        // Draw the grid lines
+        for (int index = 0; index < totalGridLines; index++) {
+            int thickness;
+
+            // Set larger thickness for lines between boxes
+            if (index == 2 || index == 5) {
+                thickness = BOX_SPACING;
+            }
+            else {
+                thickness = TILE_SPACING;
+            }
+
+            Rectangle gridLine = new Rectangle();
+
+            // Set rectangle dimensions for proper orientation
+            if (isVertical) {
+                gridLine.setHeight(BOARD_WIDTH_AND_HEIGHT);
+                gridLine.setWidth(thickness);
+            }
+            else {
+                gridLine.setHeight(thickness);
+                gridLine.setWidth(BOARD_WIDTH_AND_HEIGHT);
+            }
+
+            gridLines.getChildren().add(gridLine);
+        }
     }
 }
