@@ -21,7 +21,8 @@ public class UserInterface {
     private final int WINDOW_WIDTH = 694;
     private final int WINDOW_HEIGHT = 794;
     private final Color WINDOW_BACKGROUND_COLOR = Color.rgb(168, 136, 98, 1);
-    private final Color TILE_BACKGROUND_COLOR = Color.WHEAT;
+    private final Color TILE_BACKGROUND_COLOR = Color.rgb(245, 222, 179, 0.7);
+    private final Color TILE_BORDER_COLOR = Color.rgb(30, 30, 30, 0.7);
 
     public UserInterface(Stage stage) {
         this.stage = stage;
@@ -118,9 +119,8 @@ public class UserInterface {
 
     private void drawHorizontalGridLines(Pane board) {
         VBox horizontalGridLines = new VBox();
-        int totalGridLines = 8;
 
-        horizontalGridLines.setPadding(new Insets(TILE_WIDTH_AND_HEIGHT));
+        horizontalGridLines.setAlignment(Pos.CENTER);
         horizontalGridLines.setSpacing(TILE_WIDTH_AND_HEIGHT);
 
         // Draw the horizontal grid lines
@@ -132,7 +132,6 @@ public class UserInterface {
 
     private void drawVerticalGridLines(Pane board) {
         HBox verticalGridLines = new HBox();
-        int totalGridLines = 8;
 
         verticalGridLines.setAlignment(Pos.CENTER);
         verticalGridLines.setSpacing(TILE_WIDTH_AND_HEIGHT);
@@ -145,14 +144,14 @@ public class UserInterface {
     }
 
     private void drawLines(Pane gridLines, boolean isVertical) {
-        int totalGridLines = 8;
+        int totalGridLines = 10;
 
         // Draw the grid lines
         for (int index = 0; index < totalGridLines; index++) {
             int thickness;
 
-            // Set larger thickness for lines between boxes
-            if (index == 2 || index == 5) {
+            // Set larger thickness and different color for lines between boxes and on the edges
+            if (index == 0 || index == 3 || index == 6 || index == 9) {
                 thickness = BOX_SPACING;
             }
             else {
@@ -160,10 +159,18 @@ public class UserInterface {
             }
 
             Rectangle gridLine = new Rectangle();
+            gridLine.setFill(TILE_BORDER_COLOR);
 
             // Set rectangle dimensions for proper orientation
             if (isVertical) {
-                gridLine.setHeight(BOARD_WIDTH_AND_HEIGHT);
+                // Set larger height for edge lines to include corners
+                if (index == 0 || index == 9) {
+                    gridLine.setHeight(BOARD_WIDTH_AND_HEIGHT + 8);
+                }
+                else {
+                    gridLine.setHeight(BOARD_WIDTH_AND_HEIGHT);
+                }
+
                 gridLine.setWidth(thickness);
             }
             else {
@@ -172,6 +179,11 @@ public class UserInterface {
             }
 
             gridLines.getChildren().add(gridLine);
+
+            // Set lower z-index for tile lines so that they don't overlap the box lines
+            if (index != 0 && index != 3 && index != 6 && index != 9) {
+                gridLine.setViewOrder(10);
+            }
         }
     }
 }
