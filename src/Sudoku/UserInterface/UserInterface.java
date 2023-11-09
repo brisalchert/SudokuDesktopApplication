@@ -79,11 +79,11 @@ public class UserInterface {
             }
         }
 
-        // Add the boxGrid to the board
-        board.getChildren().add(boxGrid);
-
         // Draw the grid lines
         drawGridLines(board);
+
+        // Add the boxGrid to the board
+        board.getChildren().add(boxGrid);
 
         root.setCenter(board);
     }
