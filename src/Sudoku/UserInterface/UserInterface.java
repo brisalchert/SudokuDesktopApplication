@@ -2,7 +2,6 @@ package Sudoku.UserInterface;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -13,8 +12,8 @@ import javafx.stage.Stage;
 
 public class UserInterface {
     private final Stage stage;
-    private final Group root;
-    private final int TILE_WIDTH_AND_HEIGHT = 64;
+    private final BorderPane root;
+    private final static int TILE_WIDTH_AND_HEIGHT = 64;
     private final int TILE_SPACING = 2;
     private final int BOX_SPACING = 4;
     private final int BOARD_WIDTH_AND_HEIGHT = (9 * TILE_WIDTH_AND_HEIGHT) + (6 * TILE_SPACING) + (2 * BOX_SPACING);
@@ -26,31 +25,30 @@ public class UserInterface {
 
     public UserInterface(Stage stage) {
         this.stage = stage;
-        this.root = new Group();
+        this.root = new BorderPane();
         initializeUserInterface();
     }
 
+    public static int getTileSize() {
+        return TILE_WIDTH_AND_HEIGHT;
+    }
+
     private void initializeUserInterface() {
-        // Create VBox to vertically stack elements
-        VBox sudokuElements = new VBox();
-        sudokuElements.setAlignment(Pos.CENTER);
-
         drawBackground(root);
-        drawTitle(sudokuElements);
-        drawSudokuBoard(sudokuElements);
+        drawTitle(root);
+        drawSudokuBoard(root);
 
-        root.getChildren().add(sudokuElements);
         stage.show();
     }
 
-    private void drawBackground(Group root) {
+    private void drawBackground(BorderPane root) {
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
         scene.setFill(WINDOW_BACKGROUND_COLOR);
         stage.setTitle("Sudoku");
         stage.setScene(scene);
     }
 
-    private void drawTitle(Pane root) {
+    private void drawTitle(BorderPane root) {
         HBox titleBox = new HBox();
         Text title = new Text("Sudoku");
         Font titleFont = new Font("Century", 50);
@@ -60,10 +58,10 @@ public class UserInterface {
         titleBox.setPadding(new Insets(20));
         titleBox.setPrefWidth(WINDOW_WIDTH);
 
-        root.getChildren().add(titleBox);
+        root.setTop(titleBox);
     }
 
-    private void drawSudokuBoard(Pane root) {
+    private void drawSudokuBoard(BorderPane root) {
         StackPane board = new StackPane();
         GridPane boxGrid = new GridPane();
         int boxGridWidthAndHeight = 3;
@@ -87,11 +85,11 @@ public class UserInterface {
         // Draw the grid lines
         drawGridLines(board);
 
-        root.getChildren().add(board);
+        root.setCenter(board);
     }
 
     // Indices will be used for alternating tile colors
-    private void drawSudokuBox(GridPane root, int xIndex, int yIndex) {
+    private void drawSudokuBox(GridPane boxGrid, int xIndex, int yIndex) {
         GridPane box = new GridPane();
         int boxWidthAndHeight = 3;
 
@@ -102,22 +100,27 @@ public class UserInterface {
         // Create one 3x3 box of 9 tiles
         for (int row = 0; row < boxWidthAndHeight; row++) {
             for (int column = 0; column < boxWidthAndHeight; column++) {
-                Rectangle tile = new Rectangle(64, 64);
-                tile.setFill(TILE_BACKGROUND_COLOR);
-                box.add(tile, row, column);
+                Rectangle tileBackground = new Rectangle(64, 64);
+                tileBackground.setFill(TILE_BACKGROUND_COLOR);
+                box.add(tileBackground, row, column);
+                SudokuTile tile = new SudokuTile(tileBackground.getX(), tileBackground.getY());
+                box.add(tile.getTileNode(), row, column);
             }
         }
 
         // Add the box to the boxGrid
-        root.add(box, xIndex, yIndex);
+        boxGrid.add(box, xIndex, yIndex);
     }
 
-    private void drawGridLines(Pane board) {
-        drawHorizontalGridLines(board);
-        drawVerticalGridLines(board);
+    private void drawGridLines(StackPane board) {
+        VBox horizontalGridLines = createHorizontalGridLines();
+        HBox verticalGridLines = createVerticalGridLines();
+
+        StackPane gridLineStack = new StackPane(horizontalGridLines, verticalGridLines);
+        board.getChildren().add(gridLineStack);
     }
 
-    private void drawHorizontalGridLines(Pane board) {
+    private VBox createHorizontalGridLines() {
         VBox horizontalGridLines = new VBox();
 
         horizontalGridLines.setAlignment(Pos.CENTER);
@@ -126,11 +129,10 @@ public class UserInterface {
         // Draw the horizontal grid lines
         drawLines(horizontalGridLines, false);
 
-        // Add the horizontal grid lines to the board
-        board.getChildren().add(horizontalGridLines);
+        return horizontalGridLines;
     }
 
-    private void drawVerticalGridLines(Pane board) {
+    private HBox createVerticalGridLines() {
         HBox verticalGridLines = new HBox();
 
         verticalGridLines.setAlignment(Pos.CENTER);
@@ -139,8 +141,7 @@ public class UserInterface {
         // Draw the vertical grid lines
         drawLines(verticalGridLines, true);
 
-        // Add the horizontal grid lines to the board
-        board.getChildren().add(verticalGridLines);
+        return verticalGridLines;
     }
 
     private void drawLines(Pane gridLines, boolean isVertical) {
