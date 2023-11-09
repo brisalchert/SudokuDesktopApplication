@@ -103,7 +103,8 @@ public class UserInterface {
                 Rectangle tileBackground = new Rectangle(64, 64);
                 tileBackground.setFill(TILE_BACKGROUND_COLOR);
                 box.add(tileBackground, row, column);
-                SudokuTile tile = new SudokuTile(tileBackground.getX(), tileBackground.getY());
+
+                SudokuTile tile = new SudokuTile(row, column);
                 box.add(tile.getTileNode(), row, column);
             }
         }

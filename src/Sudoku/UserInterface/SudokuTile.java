@@ -5,15 +5,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class SudokuTile {
-    private double x;
-    private double y;
+    private int xIndex;
+    private int yIndex;
     private Rectangle tile;
     private Color tileUnfocusedColor = Color.rgb(0, 0, 0, 0.0);
     private Color tileFocusedColor = Color.rgb(0, 0, 0, 0.2);
 
-    public SudokuTile(double x, double y) {
-        this.x = x;
-        this.y = y;
+    public SudokuTile(int xIndex, int yIndex) {
+        this.xIndex = xIndex;
+        this.yIndex = yIndex;
         tile = new Rectangle();
         tile.setWidth(UserInterface.getTileSize());
         tile.setHeight(UserInterface.getTileSize());
@@ -26,11 +26,11 @@ public class SudokuTile {
         return tile;
     }
 
-    public double getX() {
-        return x;
+    public int getXIndex() {
+        return xIndex;
     }
 
-    public double getY() {
-        return y;
+    public int getYIndex() {
+        return yIndex;
     }
 }
