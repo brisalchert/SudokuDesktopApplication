@@ -10,8 +10,7 @@ import javafx.scene.text.Text;
 public class SudokuTile {
     // Used for accessing tiles by index
     private static final SudokuTile[][] tileGrid = new SudokuTile[9][9];
-    private static int lastClickedXIndex;
-    private static int lastClickedYIndex;
+    private static SudokuTile lastClickedTile;
     private int xIndex;
     private int yIndex;
     private int value;
@@ -52,18 +51,25 @@ public class SudokuTile {
         });
 
         tile.setOnMouseClicked(mouseEvent -> {
-            // Update clicked status of the last clicked tile
-            if (getLastClickedTile() != null) {
-                SudokuTile lastClickedTile = getLastClickedTile();
-                lastClickedTile.setTileColor(tileNeutralColor);
-                lastClickedTile.clicked = false;
+            // Unselect the tile if it is clicked again
+            if (getLastClickedTile() == this) {
+                lastClickedTile = null;
+                this.setTileColor(tileNeutralColor);
+                this.clicked = false;
             }
+            else {
+                // Update clicked status of the last clicked tile
+                if (getLastClickedTile() != null) {
+                    SudokuTile lastClickedTile = getLastClickedTile();
+                    lastClickedTile.setTileColor(tileNeutralColor);
+                    lastClickedTile.clicked = false;
+                }
 
-            // Update clicked status of current clicked tile
-            lastClickedXIndex = this.xIndex;
-            lastClickedYIndex = this.yIndex;
-            this.setTileColor(tileClickedColor);
-            this.clicked = true;
+                // Update clicked status of current clicked tile
+                lastClickedTile = this;
+                this.setTileColor(tileClickedColor);
+                this.clicked = true;
+            }
         });
     }
 
@@ -112,8 +118,8 @@ public class SudokuTile {
      */
     public static SudokuTile getLastClickedTile() {
         // Check that the last clicked tile is still selected
-        if (tileGrid[lastClickedXIndex][lastClickedYIndex].clicked) {
-            return tileGrid[lastClickedXIndex][lastClickedYIndex];
+        if (lastClickedTile != null) {
+            return lastClickedTile;
         }
 
         return null;
