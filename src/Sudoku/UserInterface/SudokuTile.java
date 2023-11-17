@@ -53,9 +53,7 @@ public class SudokuTile {
         tile.setOnMouseClicked(mouseEvent -> {
             // Unselect the tile if it is clicked again
             if (getLastClickedTile() == this) {
-                lastClickedTile = null;
-                this.setTileColor(tileNeutralColor);
-                this.clicked = false;
+                unselectTile();
             }
             else {
                 // Update clicked status of the last clicked tile
@@ -123,5 +121,14 @@ public class SudokuTile {
         }
 
         return null;
+    }
+
+    /**
+     * Unselects the last clicked tile
+     */
+    public void unselectTile() {
+        lastClickedTile.setTileColor(tileNeutralColor);
+        lastClickedTile.clicked = false;
+        lastClickedTile = null;
     }
 }
