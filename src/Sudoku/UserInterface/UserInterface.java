@@ -1,8 +1,11 @@
 package Sudoku.UserInterface;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -44,6 +47,10 @@ public class UserInterface {
     private void drawBackground(BorderPane root) {
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
         scene.setFill(WINDOW_BACKGROUND_COLOR);
+
+        // Add an event filter to the scene for key events
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, createEventHandler());
+
         stage.setTitle("Sudoku");
         stage.setScene(scene);
     }
@@ -196,5 +203,32 @@ public class UserInterface {
                 gridLine.setViewOrder(10);
             }
         }
+    }
+
+
+    public EventHandler<KeyEvent> createEventHandler() {
+        EventHandler<KeyEvent> eventHandler = keyEvent -> {
+            // Check if there is a tile selected
+            if (SudokuTile.getLastClickedTile() != null) {
+                if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED) {
+                    // Check that the input is valid
+                    if (keyEvent.getText().matches("[1-9]")) {
+                        int value = Integer.parseInt(keyEvent.getText());
+
+                        // Assign the input to the current tile
+                        SudokuTile.getLastClickedTile().setValue(value);
+                    }
+                    else {
+                        if (keyEvent.getCode() == KeyCode.BACK_SPACE) {
+                            SudokuTile.getLastClickedTile().setValue(0);
+                        }
+                    }
+
+                    keyEvent.consume();
+                }
+            }
+        };
+
+        return eventHandler;
     }
 }
