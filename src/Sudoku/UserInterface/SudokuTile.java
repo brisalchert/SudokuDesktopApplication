@@ -135,6 +135,7 @@ public class SudokuTile {
     public void unselectTile() {
         lastClickedTile.setTileColor(tileNeutralColor);
         lastClickedTile.clicked = false;
+        lastClickedTile.hideRelevantTiles();
         lastClickedTile = null;
     }
 

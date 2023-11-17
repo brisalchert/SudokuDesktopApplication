@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -48,8 +49,9 @@ public class UserInterface {
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
         scene.setFill(WINDOW_BACKGROUND_COLOR);
 
-        // Add an event filter to the scene for key events
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, createEventHandler());
+        // Add event filters to the scene for key events and mouse clicks
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, createKeyEventHandler());
+        scene.addEventFilter(MouseEvent.MOUSE_CLICKED, createMouseEventHandler());
 
         stage.setTitle("Sudoku");
         stage.setScene(scene);
@@ -206,7 +208,7 @@ public class UserInterface {
     }
 
 
-    public EventHandler<KeyEvent> createEventHandler() {
+    public EventHandler<KeyEvent> createKeyEventHandler() {
         EventHandler<KeyEvent> eventHandler = keyEvent -> {
             // Check if there is a tile selected
             if (SudokuTile.getLastClickedTile() != null) {
@@ -225,6 +227,21 @@ public class UserInterface {
                     }
 
                     keyEvent.consume();
+                }
+            }
+        };
+
+        return eventHandler;
+    }
+
+    public EventHandler<MouseEvent> createMouseEventHandler() {
+        EventHandler<MouseEvent> eventHandler = mouseEvent -> {
+            Object target = mouseEvent.getTarget();
+
+            // Only unselect the last clicked tile if the click is not on a tile
+            if (!(target instanceof Rectangle)) {
+                if (SudokuTile.getLastClickedTile() != null) {
+                    SudokuTile.getLastClickedTile().unselectTile();
                 }
             }
         };
