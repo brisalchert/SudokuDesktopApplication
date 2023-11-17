@@ -18,8 +18,10 @@ public class SudokuTile {
     private StackPane sudokuTile;
     private Rectangle tile;
     private Text tileText;
+    private Color lastColor;
     private Color tileNeutralColor = Color.rgb(0, 0, 0, 0.0);
-    private Color tileHoveredColor = Color.rgb(0, 0, 0, 0.2);
+    private Color tileRelevantColor = Color.rgb(0, 0, 0, 0.1);
+    private Color tileHoveredColor = Color.rgb(0, 0, 0, 0.25);
     private Color tileClickedColor = Color.rgb(0, 0, 0, 0.4);
 
     public SudokuTile(int xIndex, int yIndex) {
@@ -40,13 +42,14 @@ public class SudokuTile {
 
         tile.setOnMouseEntered(mouseEvent -> {
             if (!clicked) {
+                this.lastColor = (Color) tile.getFill();
                 tile.setFill(tileHoveredColor);
             }
         });
 
         tile.setOnMouseExited(mouseEvent -> {
             if (!clicked) {
-                tile.setFill(tileNeutralColor);
+                tile.setFill(lastColor);
             }
         });
 
@@ -54,6 +57,7 @@ public class SudokuTile {
             // Unselect the tile if it is clicked again
             if (getLastClickedTile() == this) {
                 unselectTile();
+                hideRelevantTiles();
             }
             else {
                 // Update clicked status of the last clicked tile
@@ -61,12 +65,14 @@ public class SudokuTile {
                     SudokuTile lastClickedTile = getLastClickedTile();
                     lastClickedTile.setTileColor(tileNeutralColor);
                     lastClickedTile.clicked = false;
+                    lastClickedTile.hideRelevantTiles();
                 }
 
                 // Update clicked status of current clicked tile
                 lastClickedTile = this;
                 this.setTileColor(tileClickedColor);
                 this.clicked = true;
+                this.showRelevantTiles();
             }
         });
     }
@@ -130,5 +136,25 @@ public class SudokuTile {
         lastClickedTile.setTileColor(tileNeutralColor);
         lastClickedTile.clicked = false;
         lastClickedTile = null;
+    }
+
+    private void showRelevantTiles() {
+        for (SudokuTile[] row : tileGrid) {
+            for (SudokuTile tile : row) {
+                if (tile != this && (tile.getXIndex() == this.xIndex || tile.getYIndex() == this.yIndex)) {
+                    tile.setTileColor(tileRelevantColor);
+                }
+            }
+        }
+    }
+
+    private void hideRelevantTiles() {
+        for (SudokuTile[] row : tileGrid) {
+            for (SudokuTile tile : row) {
+                if (tile != this && (tile.getXIndex() == this.xIndex || tile.getYIndex() == this.yIndex)) {
+                    tile.setTileColor(tileNeutralColor);
+                }
+            }
+        }
     }
 }
