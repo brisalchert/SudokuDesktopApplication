@@ -57,15 +57,11 @@ public class SudokuTile {
             // Unselect the tile if it is clicked again
             if (getLastClickedTile() == this) {
                 unselectTile();
-                hideRelevantTiles();
             }
             else {
                 // Update clicked status of the last clicked tile
                 if (getLastClickedTile() != null) {
-                    SudokuTile lastClickedTile = getLastClickedTile();
-                    lastClickedTile.setTileColor(tileNeutralColor);
-                    lastClickedTile.clicked = false;
-                    lastClickedTile.hideRelevantTiles();
+                    unselectTile();
                 }
 
                 // Update clicked status of current clicked tile
