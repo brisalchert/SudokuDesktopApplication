@@ -225,10 +225,10 @@ public class UserInterface {
                             SudokuTile.getLastClickedTile().setValue(0);
                         }
                     }
-
-                    keyEvent.consume();
                 }
             }
+
+            keyEvent.consume();
         };
 
         return eventHandler;
