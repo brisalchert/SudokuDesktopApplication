@@ -13,7 +13,8 @@ public class SudokuTile {
     private static SudokuTile lastClickedTile;
     private int xIndex;
     private int yIndex;
-    private int value;
+    private Integer value;
+    private StringBuilder candidates = new StringBuilder();
     private boolean clicked = false;
     private StackPane sudokuTile;
     private Rectangle tile;
@@ -73,6 +74,10 @@ public class SudokuTile {
         });
     }
 
+    public static SudokuTile[][] getTileGrid() {
+        return tileGrid;
+    }
+
     /**
      * Gets the JavaFX node for the SudokuTile
      * @return The SudokuTile's JavaFX node
@@ -93,7 +98,23 @@ public class SudokuTile {
         tile.setFill(tileColor);
     }
 
-    public int getValue() {
+    public StringBuilder getCandidates() {
+        return candidates;
+    }
+
+    public void setCandidates(String candidates) {
+        if (!this.candidates.isEmpty()) {
+            this.candidates.delete(0, this.candidates.length());
+        }
+
+        this.candidates.append(candidates);
+    }
+
+    public boolean isEmpty() {
+        return getValue() == null;
+    }
+
+    public Integer getValue() {
         return value;
     }
 
