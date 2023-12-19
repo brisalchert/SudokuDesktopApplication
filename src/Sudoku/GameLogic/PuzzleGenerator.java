@@ -11,20 +11,39 @@ public class PuzzleGenerator {
     }
     public void assignNineRandom() {
         Random generator = new Random();
+        SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
         int count = 0;
 
         while (count < 9) {
             int xIndex = generator.nextInt(9);
             int yIndex = generator.nextInt(9);
-            SudokuTile randomTile = SudokuTile.getTileGrid()[xIndex][yIndex];
+            SudokuTile randomTile = tileGrid[xIndex][yIndex];
 
+            // TODO: Update variable names for indices ("X", "Y", "Row", "Column")
             if (randomTile.isEmpty()) {
-                int value = generator.nextInt(9);
+                // Generate a random index from the String of valid candidates
+                int candidateIndex = generator.nextInt(randomTile.getCandidates().length());
+                int value = Integer.parseInt(String.valueOf(randomTile.getCandidates().charAt(candidateIndex)));
 
-                // TODO: Function to update candidates for other tiles based on new placement
                 if (randomTile.getCandidates().indexOf(Integer.toString(value)) != -1) {
+                    // Update the value and candidates for the tile
                     randomTile.setValue(value);
                     randomTile.setCandidates(Integer.toString(value));
+
+                    // Update candidates for tiles in the same row
+                    for (SudokuTile tile : randomTile.getRow()) {
+                        tile.removeCandidate(value);
+                    }
+
+                    // Update candidates for tiles in the same column
+                    for (SudokuTile tile : randomTile.getColumn()) {
+                        tile.removeCandidate(value);
+                    }
+
+                    // Update candidates for tiles in the same box
+                    for (SudokuTile tile : randomTile.getBox()) {
+                        tile.removeCandidate(value);
+                    }
 
                     count++;
                 }

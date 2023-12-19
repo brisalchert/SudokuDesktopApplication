@@ -7,6 +7,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SudokuTile {
     // Used for accessing tiles by index
     private static final SudokuTile[][] tileGrid = new SudokuTile[9][9];
@@ -108,6 +111,76 @@ public class SudokuTile {
         }
 
         this.candidates.append(candidates);
+    }
+
+    /**
+     * Adds a candidate to the list of candidates for a tile
+     * @param candidate the candidate to add
+     */
+    public void addCandidate(int candidate) {
+        if (this.candidates.indexOf(Integer.toString(candidate)) == -1) {
+            this.candidates.append(candidate);
+        }
+    }
+
+    /**
+     * Removes a candidate from the list of candidates for a tile
+     * @param candidate the candidate to remove
+     */
+    public void removeCandidate(int candidate) {
+        int candidateIndex = this.candidates.indexOf(Integer.toString(candidate));
+
+        if (candidateIndex != -1) {
+            this.candidates.deleteCharAt(candidateIndex);
+        }
+    }
+
+    /**
+     * Retrieves a collection of all the SudokuTiles in the same row as the current one
+     * @return the list of tiles in the same row
+     */
+    public List<SudokuTile> getRow() {
+        List<SudokuTile> rowList = new ArrayList<>();
+        int columnIndex = this.getYIndex();
+
+        for (int rowIndex = 0; rowIndex < tileGrid.length; rowIndex++) {
+            rowList.add(tileGrid[rowIndex][columnIndex]);
+        }
+
+        return rowList;
+    }
+
+    /**
+     * Retrieves a collection of all the SudokuTiles in the same column as the current one
+     * @return the list of tiles in the same column
+     */
+    public List<SudokuTile> getColumn() {
+        List<SudokuTile> columnList = new ArrayList<>();
+        int rowIndex = this.getXIndex();
+
+        for (int columnIndex = 0; columnIndex < tileGrid.length; columnIndex++) {
+            columnList.add(tileGrid[rowIndex][columnIndex]);
+        }
+
+        return columnList;
+    }
+
+    /**
+     * Retrieves a collection of all the SudokuTiles in the same box as the current one
+     * @return the list of tiles in the same box
+     */
+    public List<SudokuTile> getBox() {
+        List<SudokuTile> boxList = new ArrayList<>();
+        int boxRowIndex = (this.getXIndex() / 3);
+        int boxColumnIndex = (this.getYIndex() / 3);
+
+        for (int rowIndex = (boxRowIndex * 3); rowIndex < ((boxRowIndex + 1) * 3); rowIndex++) {
+            for (int columnIndex = (boxColumnIndex * 3); columnIndex < ((boxColumnIndex + 1) * 3); columnIndex++) {
+                boxList.add(tileGrid[rowIndex][columnIndex]);
+            }
+        }
+
+        return boxList;
     }
 
     public boolean isEmpty() {
