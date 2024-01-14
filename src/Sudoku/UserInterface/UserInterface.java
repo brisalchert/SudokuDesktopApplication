@@ -84,7 +84,7 @@ public class UserInterface {
         // Create a 3x3 grid of boxes
         for (int row = 0; row < boxGridWidthAndHeight; row++) {
             for (int column = 0; column < boxGridWidthAndHeight; column++) {
-                drawSudokuBox(boxGrid, row, column);
+                drawSudokuBox(boxGrid, column, row);
             }
         }
 
@@ -101,7 +101,7 @@ public class UserInterface {
     private void drawSudokuBox(GridPane boxGrid, int xIndex, int yIndex) {
         GridPane box = new GridPane();
         int boxWidthAndHeight = 3;
-        int gridRow = (3 * xIndex);
+        int gridRow = (3 * yIndex);
         int gridColumn;
 
         // Set spacing between tiles
@@ -110,16 +110,16 @@ public class UserInterface {
 
         // Create one 3x3 box of 9 tiles
         for (int boxRow = 0; boxRow < boxWidthAndHeight; boxRow++) {
-            gridColumn = (3*yIndex);
+            gridColumn = (3*xIndex);
 
             for (int boxColumn = 0; boxColumn < boxWidthAndHeight; boxColumn++) {
                 Rectangle tileBackground = new Rectangle(64, 64);
                 tileBackground.setFill(TILE_BACKGROUND_COLOR);
-                box.add(tileBackground, boxRow, boxColumn);
+                box.add(tileBackground, boxColumn, boxRow);
 
                 // Assign tile coordinates relative to the entire grid
-                SudokuTile tile = new SudokuTile(gridRow, gridColumn);
-                box.add(tile.getTileNode(), boxRow, boxColumn);
+                SudokuTile tile = new SudokuTile(gridColumn, gridRow);
+                box.add(tile.getTileNode(), boxColumn, boxRow);
 
                 gridColumn++;
             }

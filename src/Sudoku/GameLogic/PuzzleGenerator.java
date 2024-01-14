@@ -19,12 +19,12 @@ public class PuzzleGenerator {
             int yIndex = generator.nextInt(9);
             SudokuTile randomTile = tileGrid[xIndex][yIndex];
 
-            // TODO: Update variable names for indices ("X", "Y", "Row", "Column")
             if (randomTile.isEmpty()) {
                 // Generate a random index from the String of valid candidates
                 int candidateIndex = generator.nextInt(randomTile.getCandidates().length());
                 int value = Integer.parseInt(String.valueOf(randomTile.getCandidates().charAt(candidateIndex)));
 
+                // Check if value is a valid candidate
                 if (randomTile.getCandidates().indexOf(Integer.toString(value)) != -1) {
                     // Update the value and candidates for the tile
                     randomTile.setValue(value);
@@ -52,8 +52,8 @@ public class PuzzleGenerator {
     }
 
     private void setInitialCandidates() {
-        for (SudokuTile[] row : SudokuTile.getTileGrid()) {
-            for (SudokuTile tile : row) {
+        for (SudokuTile[] column : SudokuTile.getTileGrid()) {
+            for (SudokuTile tile : column) {
                 tile.setCandidates("123456789");
             }
         }

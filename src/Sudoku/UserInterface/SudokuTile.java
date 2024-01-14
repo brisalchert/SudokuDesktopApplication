@@ -14,7 +14,9 @@ public class SudokuTile {
     // Used for accessing tiles by index
     private static final SudokuTile[][] tileGrid = new SudokuTile[9][9];
     private static SudokuTile lastClickedTile;
+    // Corresponds to column index
     private int xIndex;
+    // Corresponds to row index
     private int yIndex;
     private Integer value;
     private StringBuilder candidates = new StringBuilder();
@@ -141,10 +143,11 @@ public class SudokuTile {
      */
     public List<SudokuTile> getRow() {
         List<SudokuTile> rowList = new ArrayList<>();
-        int columnIndex = this.getYIndex();
+        int rowIndex = this.getYIndex();
 
-        for (int rowIndex = 0; rowIndex < tileGrid.length; rowIndex++) {
-            rowList.add(tileGrid[rowIndex][columnIndex]);
+        // For each column in the tileGrid, add the tile from the corresponding row
+        for (int columnIndex = 0; columnIndex < tileGrid.length; columnIndex++) {
+            rowList.add(tileGrid[columnIndex][rowIndex]);
         }
 
         return rowList;
@@ -156,10 +159,11 @@ public class SudokuTile {
      */
     public List<SudokuTile> getColumn() {
         List<SudokuTile> columnList = new ArrayList<>();
-        int rowIndex = this.getXIndex();
+        int columnIndex = this.getXIndex();
 
-        for (int columnIndex = 0; columnIndex < tileGrid.length; columnIndex++) {
-            columnList.add(tileGrid[rowIndex][columnIndex]);
+        // For each row in the tileGrid, add the tile from the corresponding column
+        for (int rowIndex = 0; rowIndex < tileGrid.length; rowIndex++) {
+            columnList.add(tileGrid[columnIndex][rowIndex]);
         }
 
         return columnList;
@@ -171,12 +175,12 @@ public class SudokuTile {
      */
     public List<SudokuTile> getBox() {
         List<SudokuTile> boxList = new ArrayList<>();
-        int boxRowIndex = (this.getXIndex() / 3);
-        int boxColumnIndex = (this.getYIndex() / 3);
+        int boxColumnIndex = (this.getXIndex() / 3);
+        int boxRowIndex = (this.getYIndex() / 3);
 
         for (int rowIndex = (boxRowIndex * 3); rowIndex < ((boxRowIndex + 1) * 3); rowIndex++) {
             for (int columnIndex = (boxColumnIndex * 3); columnIndex < ((boxColumnIndex + 1) * 3); columnIndex++) {
-                boxList.add(tileGrid[rowIndex][columnIndex]);
+                boxList.add(tileGrid[columnIndex][rowIndex]);
             }
         }
 
@@ -230,8 +234,8 @@ public class SudokuTile {
     }
 
     private void showRelevantTiles() {
-        for (SudokuTile[] row : tileGrid) {
-            for (SudokuTile tile : row) {
+        for (SudokuTile[] column : tileGrid) {
+            for (SudokuTile tile : column) {
                 if (tile != this && (tile.getXIndex() == this.xIndex || tile.getYIndex() == this.yIndex)) {
                     tile.setTileColor(tileRelevantColor);
                 }
@@ -240,8 +244,8 @@ public class SudokuTile {
     }
 
     private void hideRelevantTiles() {
-        for (SudokuTile[] row : tileGrid) {
-            for (SudokuTile tile : row) {
+        for (SudokuTile[] column : tileGrid) {
+            for (SudokuTile tile : column) {
                 if (tile != this && (tile.getXIndex() == this.xIndex || tile.getYIndex() == this.yIndex)) {
                     tile.setTileColor(tileNeutralColor);
                 }
