@@ -11,6 +11,9 @@ import java.util.Set;
 public class PuzzleGenerator {
     private Set<Coordinates> unfilledCoordinates;
 
+    /**
+     * Constructor: Creates a PuzzleGenerator object and calls puzzle generation methods
+     */
     public PuzzleGenerator() {
         setInitialCandidates();
         assignNineRandom();
