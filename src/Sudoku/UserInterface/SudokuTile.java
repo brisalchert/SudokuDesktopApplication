@@ -88,6 +88,10 @@ public class SudokuTile {
         return sudokuTile;
     }
 
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+
     public int getXIndex() {
         return coordinates.x();
     }
