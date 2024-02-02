@@ -9,6 +9,7 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class SudokuTile {
     // Used for accessing tiles by index
@@ -136,6 +137,18 @@ public class SudokuTile {
         if (candidateIndex != -1) {
             this.candidates.deleteCharAt(candidateIndex);
         }
+    }
+
+    /**
+     * Gets a random candidate from this tile's list of valid candidates
+     * @return the random candidate as an integer
+     */
+    public int getRandomCandidate() {
+        Random generator = new Random();
+
+        // Generate a random index from the String of valid candidates
+        int candidateIndex = generator.nextInt(this.getCandidates().length());
+        return Integer.parseInt(String.valueOf(this.getCandidates().charAt(candidateIndex)));
     }
 
     /**

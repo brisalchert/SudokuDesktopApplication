@@ -81,7 +81,6 @@ public class PuzzleGenerator {
      * Assigns nine random tiles in the grid with a random (valid) value.
      */
     private void assignNineRandom() {
-        Random generator = new Random();
         SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
         int count = 0;
 
@@ -89,38 +88,32 @@ public class PuzzleGenerator {
             Coordinates randomUnfilledCoordinates = getRandomUnfilledCoordinates();
             SudokuTile randomTile = tileGrid[randomUnfilledCoordinates.x()][randomUnfilledCoordinates.y()];
 
-            if (randomTile.isEmpty()) {
-                // Generate a random index from the String of valid candidates
-                int candidateIndex = generator.nextInt(randomTile.getCandidates().length());
-                int value = Integer.parseInt(String.valueOf(randomTile.getCandidates().charAt(candidateIndex)));
+            // Get a random valid candidate for the tile
+            int randomCandidate = randomTile.getRandomCandidate();
 
-                // Check if value is a valid candidate
-                if (randomTile.getCandidates().indexOf(Integer.toString(value)) != -1) {
-                    // Update the value and candidates for the tile
-                    randomTile.setValue(value);
-                    randomTile.setCandidates(Integer.toString(value));
+            // Update the value and candidates for the tile
+            randomTile.setValue(randomCandidate);
+            randomTile.setCandidates(Integer.toString(randomCandidate));
 
-                    // Update candidates for tiles in the same row
-                    for (SudokuTile tile : randomTile.getRow()) {
-                        tile.removeCandidate(value);
-                    }
-
-                    // Update candidates for tiles in the same column
-                    for (SudokuTile tile : randomTile.getColumn()) {
-                        tile.removeCandidate(value);
-                    }
-
-                    // Update candidates for tiles in the same box
-                    for (SudokuTile tile : randomTile.getBox()) {
-                        tile.removeCandidate(value);
-                    }
-
-                    // Remove the randomly-selected tile from unfilledCoordinates
-                    removeUnfilledCoordinates(randomTile.getCoordinates());
-
-                    count++;
-                }
+            // Update candidates for tiles in the same row
+            for (SudokuTile tile : randomTile.getRow()) {
+                tile.removeCandidate(randomCandidate);
             }
+
+            // Update candidates for tiles in the same column
+            for (SudokuTile tile : randomTile.getColumn()) {
+                tile.removeCandidate(randomCandidate);
+            }
+
+            // Update candidates for tiles in the same box
+            for (SudokuTile tile : randomTile.getBox()) {
+                tile.removeCandidate(randomCandidate);
+            }
+
+            // Remove the randomly-selected tile from unfilledCoordinates
+            removeUnfilledCoordinates(randomTile.getCoordinates());
+
+            count++;
         }
     }
 
