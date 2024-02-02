@@ -14,10 +14,8 @@ public class SudokuTile {
     // Used for accessing tiles by index
     private static final SudokuTile[][] tileGrid = new SudokuTile[9][9];
     private static SudokuTile lastClickedTile;
-    // Corresponds to column index
-    private int xIndex;
-    // Corresponds to row index
-    private int yIndex;
+    // X corresponds to column index, Y corresponds to row index
+    private final Coordinates coordinates;
     private Integer value;
     private StringBuilder candidates = new StringBuilder();
     private boolean clicked = false;
@@ -31,8 +29,7 @@ public class SudokuTile {
     private Color tileClickedColor = Color.rgb(0, 0, 0, 0.4);
 
     public SudokuTile(int xIndex, int yIndex) {
-        this.xIndex = xIndex;
-        this.yIndex = yIndex;
+        coordinates = new Coordinates(xIndex, yIndex);
         tile = new Rectangle();
         tileText = new Text();
         sudokuTile = new StackPane(tileText, tile);
@@ -40,7 +37,7 @@ public class SudokuTile {
         tileText.setFont(tileFont);
 
         // Add the tile to the global tileGrid
-        tileGrid[xIndex][yIndex] = this;
+        tileGrid[getXIndex()][getYIndex()] = this;
 
         tile.setWidth(UserInterface.getTileSize());
         tile.setHeight(UserInterface.getTileSize());
@@ -92,11 +89,11 @@ public class SudokuTile {
     }
 
     public int getXIndex() {
-        return xIndex;
+        return coordinates.x();
     }
 
     public int getYIndex() {
-        return yIndex;
+        return coordinates.y();
     }
 
     private void setTileColor(Color tileColor) {
@@ -236,7 +233,7 @@ public class SudokuTile {
     private void showRelevantTiles() {
         for (SudokuTile[] column : tileGrid) {
             for (SudokuTile tile : column) {
-                if (tile != this && (tile.getXIndex() == this.xIndex || tile.getYIndex() == this.yIndex)) {
+                if (tile != this && (tile.getXIndex() == this.getXIndex() || tile.getYIndex() == this.getYIndex())) {
                     tile.setTileColor(tileRelevantColor);
                 }
             }
@@ -246,7 +243,7 @@ public class SudokuTile {
     private void hideRelevantTiles() {
         for (SudokuTile[] column : tileGrid) {
             for (SudokuTile tile : column) {
-                if (tile != this && (tile.getXIndex() == this.xIndex || tile.getYIndex() == this.yIndex)) {
+                if (tile != this && (tile.getXIndex() == this.getXIndex() || tile.getYIndex() == this.getYIndex())) {
                     tile.setTileColor(tileNeutralColor);
                 }
             }
