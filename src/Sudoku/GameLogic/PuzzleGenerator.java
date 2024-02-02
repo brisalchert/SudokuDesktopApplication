@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.Set;
 
 public class PuzzleGenerator {
-    private Set<Coordinates> unfilledTiles;
+    private Set<Coordinates> unfilledCoordinates;
 
     public PuzzleGenerator() {
         setInitialCandidates();
@@ -17,20 +17,20 @@ public class PuzzleGenerator {
     }
 
     /**
-     * Adds the coordinates of all tiles to the set unfilledTiles
+     * Adds the coordinates of all tiles to the set of unfilled coordinates
      */
     private void initUnfilledTiles() {
-        unfilledTiles = new HashSet<>();
+        unfilledCoordinates = new HashSet<>();
 
         for (SudokuTile[] column : SudokuTile.getTileGrid()) {
             for (SudokuTile tile : column) {
-                unfilledTiles.add(tile.getCoordinates());
+                unfilledCoordinates.add(tile.getCoordinates());
             }
         }
     }
 
     /**
-     * Gets a random Coordinates object from the set unfilledTiles
+     * Gets a random Coordinates object from the set unfilled coordinates
      * @return the Coordinates of a random unfilled tile
      */
     private Coordinates getRandomUnfilledCoordinates() {
@@ -40,10 +40,10 @@ public class PuzzleGenerator {
         Iterator<Coordinates> coordinatesIterator;
         Coordinates randomUnfilledCoordinates = null;
 
-        // Generate a random index from the set of unfilledTiles
-        randomCoordinateIndex = generator.nextInt(unfilledTiles.size());
+        // Generate a random index from the set of unfilled coordinates
+        randomCoordinateIndex = generator.nextInt(unfilledCoordinates.size());
 
-        coordinatesIterator = unfilledTiles.iterator();
+        coordinatesIterator = unfilledCoordinates.iterator();
         currentIndex = 0;
 
         // Iterate over the set of coordinates
@@ -59,6 +59,22 @@ public class PuzzleGenerator {
         }
 
         return randomUnfilledCoordinates;
+    }
+
+    /**
+     * Adds the given coordinates to the list of unfilled coordinates
+     * @param coordinates the coordinates of the unfilled tile
+     */
+    private void addUnfilledCoordinates(Coordinates coordinates) {
+        unfilledCoordinates.add(coordinates);
+    }
+
+    /**
+     * Removes the given coordinates from the list of unfilled coordinates
+     * @param coordinates the coordinates of the filled tile
+     */
+    private void removeUnfilledCoordinates(Coordinates coordinates) {
+        unfilledCoordinates.remove(coordinates);
     }
 
     /**
@@ -99,8 +115,8 @@ public class PuzzleGenerator {
                         tile.removeCandidate(value);
                     }
 
-                    // Remove the randomly-selected tile from unfilledTiles
-                    unfilledTiles.remove(randomTile.getCoordinates());
+                    // Remove the randomly-selected tile from unfilledCoordinates
+                    removeUnfilledCoordinates(randomTile.getCoordinates());
 
                     count++;
                 }
