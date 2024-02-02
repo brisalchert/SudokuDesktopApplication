@@ -9,6 +9,10 @@ public class PuzzleGenerator {
         setInitialCandidates();
         assignNineRandom();
     }
+
+    /**
+     * Assigns nine random tiles in the grid with a random (valid) value.
+     */
     public void assignNineRandom() {
         Random generator = new Random();
         SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
@@ -51,6 +55,9 @@ public class PuzzleGenerator {
         }
     }
 
+    /**
+     * Sets the candidates for each tile in the grid to all possible values
+     */
     private void setInitialCandidates() {
         for (SudokuTile[] column : SudokuTile.getTileGrid()) {
             for (SudokuTile tile : column) {
