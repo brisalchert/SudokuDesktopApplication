@@ -98,6 +98,7 @@ public class PuzzleGenerator {
     /**
      * Assigns nine random tiles in the grid with a random (valid) value.
      */
+    // TODO: Need to assign one of each possible value, not nine random values
     private void assignNineRandom() {
         SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
         int count = 0;
@@ -110,6 +111,7 @@ public class PuzzleGenerator {
             int randomCandidate = randomTile.getRandomCandidate();
 
             // Fill the tile and update relevant tiles' candidates
+            // TODO: Technically possible to invalidate the last tile of 9
             fillTileAndUpdate(randomTile, randomCandidate);
 
             // Remove the randomly-selected tile from unfilledCoordinates
