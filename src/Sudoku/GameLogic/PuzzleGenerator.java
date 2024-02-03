@@ -1,6 +1,5 @@
 package Sudoku.GameLogic;
 
-import Sudoku.Testing.Tests;
 import Sudoku.UserInterface.Coordinates;
 import Sudoku.UserInterface.SudokuTile;
 
@@ -18,6 +17,7 @@ public class PuzzleGenerator {
     public PuzzleGenerator() {
         setInitialCandidates();
         assignNineRandom();
+        fillGrid();
     }
 
     /**
@@ -109,24 +109,8 @@ public class PuzzleGenerator {
             // Get a random valid candidate for the tile
             int randomCandidate = randomTile.getRandomCandidate();
 
-            // Update the value and candidates for the tile
-            randomTile.setValue(randomCandidate);
-            randomTile.setCandidates(Integer.toString(randomCandidate));
-
-            // Update candidates for tiles in the same row
-            for (SudokuTile tile : randomTile.getRow()) {
-                tile.removeCandidate(randomCandidate);
-            }
-
-            // Update candidates for tiles in the same column
-            for (SudokuTile tile : randomTile.getColumn()) {
-                tile.removeCandidate(randomCandidate);
-            }
-
-            // Update candidates for tiles in the same box
-            for (SudokuTile tile : randomTile.getBox()) {
-                tile.removeCandidate(randomCandidate);
-            }
+            // Fill the tile and update relevant tiles' candidates
+            fillTileAndUpdate(randomTile, randomCandidate);
 
             // Remove the randomly-selected tile from unfilledCoordinates
             removeUnfilledCoordinates(randomTile.getCoordinates());
@@ -136,16 +120,44 @@ public class PuzzleGenerator {
     }
 
     private void fillGrid() {
+        SudokuTile nextTile = null;
+
         // Repeat until all tiles are filled
         while (!unfilledCoordinates.isEmpty()) {
-            // Get a random unfilled tile
-            Coordinates nextCoordinates = getRandomUnfilledCoordinates();
-            SudokuTile nextTile = SudokuTile.getTileGrid()[nextCoordinates.x()][nextCoordinates.y()];
+            // Check if the next tile has already been picked
+            if (nextTile == null) {
+                // Get a random unfilled tile
+                Coordinates nextCoordinates = getRandomUnfilledCoordinates();
+                nextTile = SudokuTile.getTileGrid()[nextCoordinates.x()][nextCoordinates.y()];
+            }
 
-            int randomCandidate = nextTile.getRandomCandidate();
+            // Pick a random valid candidate
+            int candidate = nextTile.getRandomCandidate();
 
-            // Check if the random candidate will invalidate relevant tiles
+            // Check if the candidate will invalidate relevant tiles
+            SudokuTile firstInvalidatedTile = getFirstInvalidatedTile(nextTile, candidate);
 
+            if (firstInvalidatedTile != null) {
+                // Remove the invalid candidate
+                // TODO: Implement backtracking here if the invalid candidate is the last
+                if (nextTile.onlyCandidateEquals(candidate)) {
+                    return;
+                }
+
+                nextTile.removeCandidate(candidate);
+
+                // Set the invalidated tile as the next tile to fill and iterate again
+                nextTile = firstInvalidatedTile;
+                continue;
+            }
+
+            // Fill the tile and update relevant tiles
+            fillTileAndUpdate(nextTile, candidate);
+
+            // Remove the tile from the list of unfilled coordinates
+            unfilledCoordinates.remove(nextTile.getCoordinates());
+
+            nextTile = null;
         }
     }
 
@@ -179,5 +191,31 @@ public class PuzzleGenerator {
 
         // Return null if there are no invalidated tiles
         return null;
+    }
+
+    /**
+     * Fills a tile with the given value candidate and updates candidates for relevant tiles
+     * @param tile the tile to fill
+     * @param candidate the value to place in the tile
+     */
+    private void fillTileAndUpdate(SudokuTile tile, int candidate) {
+        // Fill the tile and update its candidates
+        tile.setValue(candidate);
+        tile.setCandidates(Integer.toString(candidate));
+
+        // Update candidates for tiles in the same row
+        for (SudokuTile rowTile : tile.getRow()) {
+            rowTile.removeCandidate(candidate);
+        }
+
+        // Update candidates for tiles in the same column
+        for (SudokuTile columnTile : tile.getColumn()) {
+            columnTile.removeCandidate(candidate);
+        }
+
+        // Update candidates for tiles in the same box
+        for (SudokuTile boxTile : tile.getBox()) {
+            boxTile.removeCandidate(candidate);
+        }
     }
 }
