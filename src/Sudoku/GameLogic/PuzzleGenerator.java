@@ -1,5 +1,6 @@
 package Sudoku.GameLogic;
 
+import Sudoku.Testing.Tests;
 import Sudoku.UserInterface.Coordinates;
 import Sudoku.UserInterface.SudokuTile;
 
@@ -17,6 +18,20 @@ public class PuzzleGenerator {
     public PuzzleGenerator() {
         setInitialCandidates();
         assignNineRandom();
+    }
+
+    /**
+     * Sets the candidates for each tile in the grid to all possible values and adds all tiles to unfilledCoordinates
+     */
+    private void setInitialCandidates() {
+        // Add all tiles to the set of unfilled coordinates
+        initUnfilledCoordinates();
+
+        for (SudokuTile[] column : SudokuTile.getTileGrid()) {
+            for (SudokuTile tile : column) {
+                tile.setCandidates("123456789");
+            }
+        }
     }
 
     /**
@@ -120,17 +135,49 @@ public class PuzzleGenerator {
         }
     }
 
-    /**
-     * Sets the candidates for each tile in the grid to all possible values and adds all tiles to unfilledCoordinates
-     */
-    private void setInitialCandidates() {
-        // Add all tiles to the set of unfilled coordinates
-        initUnfilledCoordinates();
+    private void fillGrid() {
+        // Repeat until all tiles are filled
+        while (!unfilledCoordinates.isEmpty()) {
+            // Get a random unfilled tile
+            Coordinates nextCoordinates = getRandomUnfilledCoordinates();
+            SudokuTile nextTile = SudokuTile.getTileGrid()[nextCoordinates.x()][nextCoordinates.y()];
 
-        for (SudokuTile[] column : SudokuTile.getTileGrid()) {
-            for (SudokuTile tile : column) {
-                tile.setCandidates("123456789");
+            int randomCandidate = nextTile.getRandomCandidate();
+
+            // Check if the random candidate will invalidate relevant tiles
+
+        }
+    }
+
+    /**
+     * Returns the first tile that will be invalidated by a candidate placement, or null if no tiles are invalidated
+     * @param tileToFill the tile in which the candidate is to be placed
+     * @param candidate the value that will fill the tile
+     * @return the first invalidated tile, or null if none are invalidated
+     */
+    private SudokuTile getFirstInvalidatedTile(SudokuTile tileToFill, int candidate) {
+        // Check tiles in the same row
+        for (SudokuTile relevantTile : tileToFill.getRow()) {
+            if (relevantTile.onlyCandidateEquals(candidate)) {
+                return relevantTile;
             }
         }
+
+        // Check tiles in the same column
+        for (SudokuTile relevantTile : tileToFill.getColumn()) {
+            if (relevantTile.onlyCandidateEquals(candidate)) {
+                return relevantTile;
+            }
+        }
+
+        // Check tiles in the same box
+        for (SudokuTile relevantTile : tileToFill.getBox()) {
+            if (relevantTile.onlyCandidateEquals(candidate)) {
+                return relevantTile;
+            }
+        }
+
+        // Return null if there are no invalidated tiles
+        return null;
     }
 }
