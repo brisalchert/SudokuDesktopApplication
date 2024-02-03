@@ -142,8 +142,9 @@ public class SudokuTile {
     /**
      * Gets a random candidate from this tile's list of valid candidates
      * @return the random candidate as an integer
+     * @throws IllegalArgumentException if there are no valid candidates
      */
-    public int getRandomCandidate() {
+    public int getRandomCandidate() throws IllegalArgumentException {
         Random generator = new Random();
 
         // Generate a random index from the String of valid candidates
