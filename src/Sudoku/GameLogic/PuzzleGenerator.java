@@ -22,7 +22,7 @@ public class PuzzleGenerator {
     /**
      * Adds the coordinates of all tiles to the set of unfilled coordinates
      */
-    private void initUnfilledTiles() {
+    private void initUnfilledCoordinates() {
         unfilledCoordinates = new HashSet<>();
 
         for (SudokuTile[] column : SudokuTile.getTileGrid()) {
@@ -33,7 +33,7 @@ public class PuzzleGenerator {
     }
 
     /**
-     * Gets a random Coordinates object from the set unfilled coordinates
+     * Gets a random Coordinates object from the set of unfilled coordinates
      * @return the Coordinates of a random unfilled tile
      */
     private Coordinates getRandomUnfilledCoordinates() {
@@ -121,10 +121,11 @@ public class PuzzleGenerator {
     }
 
     /**
-     * Sets the candidates for each tile in the grid to all possible values and adds all tiles to unfilledTiles
+     * Sets the candidates for each tile in the grid to all possible values and adds all tiles to unfilledCoordinates
      */
     private void setInitialCandidates() {
-        initUnfilledTiles();
+        // Add all tiles to the set of unfilled coordinates
+        initUnfilledCoordinates();
 
         for (SudokuTile[] column : SudokuTile.getTileGrid()) {
             for (SudokuTile tile : column) {
