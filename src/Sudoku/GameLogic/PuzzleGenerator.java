@@ -141,6 +141,7 @@ public class PuzzleGenerator {
                 // Remove the invalid candidate
                 // TODO: Implement backtracking here if the invalid candidate is the last
                 if (nextTile.onlyCandidateEquals(candidate)) {
+                    System.out.println("Tiles filled: " + (81 - unfilledCoordinates.size()));
                     return;
                 }
 
