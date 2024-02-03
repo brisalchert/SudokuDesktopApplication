@@ -153,6 +153,21 @@ public class SudokuTile {
     }
 
     /**
+     * Returns a boolean corresponding to whether the provided integer matches the tile's only candidate
+     * @param candidate the provided integer
+     * @return true if the candidate matches, false if it does not or there are multiple candidates
+     */
+    public boolean onlyCandidateEquals(int candidate) {
+        // Return false if there is more than one candidate
+        if (this.candidates.length() > 1) {
+            return false;
+        }
+
+        // Return true if the candidate matches, false otherwise
+        return this.candidates.toString().equals(Integer.toString(candidate));
+    }
+
+    /**
      * Retrieves a collection of all the SudokuTiles in the same row as the current one
      * @return the list of tiles in the same row
      */
