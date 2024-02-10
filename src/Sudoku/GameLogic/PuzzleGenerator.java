@@ -16,7 +16,7 @@ public class PuzzleGenerator {
      */
     public PuzzleGenerator() {
         setInitialCandidates();
-        assignNineRandom();
+        assignFirstNine();
         fillGrid();
     }
 
@@ -96,28 +96,36 @@ public class PuzzleGenerator {
     }
 
     /**
-     * Assigns nine random tiles in the grid with a random (valid) value.
+     * Assigns nine random tiles in the grid with the values 1-9.
      */
-    // TODO: Need to assign one of each possible value, not nine random values
-    private void assignNineRandom() {
+    private void assignFirstNine() {
         SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
-        int count = 0;
+        int value = 1;
 
-        while (count < 9) {
+        while (value <= 9) {
             Coordinates randomUnfilledCoordinates = getRandomUnfilledCoordinates();
             SudokuTile randomTile = tileGrid[randomUnfilledCoordinates.x()][randomUnfilledCoordinates.y()];
 
-            // Get a random valid candidate for the tile
-            int randomCandidate = randomTile.getRandomCandidate();
+            // Set the candidate to the current value (1-9)
+            int candidate = value;
+
+
+            // On last number, make sure placement is not invalid (very small chance it is)
+            if (value == 9) {
+                SudokuTile firstInvalidatedTile = getFirstInvalidatedTile(randomTile, candidate);
+
+                if (firstInvalidatedTile != null) {
+                    continue;
+                }
+            }
 
             // Fill the tile and update relevant tiles' candidates
-            // TODO: Technically possible to invalidate the last tile of 9
-            fillTileAndUpdate(randomTile, randomCandidate);
+            fillTileAndUpdate(randomTile, candidate);
 
             // Remove the randomly-selected tile from unfilledCoordinates
             removeUnfilledCoordinates(randomTile.getCoordinates());
 
-            count++;
+            value++;
         }
     }
 
