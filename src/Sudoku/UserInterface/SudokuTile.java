@@ -168,6 +168,27 @@ public class SudokuTile {
     }
 
     /**
+     * Gets the number of candidates remaining for this tile
+     * @return the number of remaining candidates
+     */
+    public int getNumCandidates() {
+        return this.candidates.length();
+    }
+
+    /**
+     * Returns a boolean corresponding to whether this tile has the specified candidate or not
+     * @param candidate the candidate being checked
+     * @return true if the candidate is present, false otherwise
+     */
+    public boolean hasCandidate(int candidate) {
+        if (this.candidates.indexOf(Integer.toString(candidate)) != -1) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Retrieves a collection of all the SudokuTiles in the same row as the current one
      * @return the list of tiles in the same row
      */

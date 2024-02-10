@@ -2,11 +2,7 @@ package Sudoku.GameLogic;
 
 import Sudoku.UserInterface.Coordinates;
 import Sudoku.UserInterface.SudokuTile;
-
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class PuzzleGenerator {
     private Set<Coordinates> unfilledCoordinates;
@@ -109,7 +105,6 @@ public class PuzzleGenerator {
             // Set the candidate to the current value (1-9)
             int candidate = value;
 
-
             // On last number, make sure placement is not invalid (very small chance it is)
             if (value == 9) {
                 SudokuTile firstInvalidatedTile = getFirstInvalidatedTile(randomTile, candidate);
@@ -143,6 +138,8 @@ public class PuzzleGenerator {
 
             // Pick a random valid candidate
             int candidate = nextTile.getRandomCandidate();
+
+            // TODO: Implement invalid pair checking and backtracking
 
             // Check if the candidate will invalidate relevant tiles
             SudokuTile firstInvalidatedTile = getFirstInvalidatedTile(nextTile, candidate);
@@ -228,5 +225,57 @@ public class PuzzleGenerator {
         for (SudokuTile boxTile : tile.getBox()) {
             boxTile.removeCandidate(candidate);
         }
+    }
+
+    /**
+     * Returns a boolean corresponding to whether the value placement will create a pair of tiles
+     * with the same single candidate (an invalid pair)
+     * @param tileToFill the tile being filled
+     * @param candidate the value to place in the tile
+     * @return true if the placement creates an invalid pair, false otherwise
+     */
+    private boolean createsInvalidPair(SudokuTile tileToFill, int candidate) {
+        // Add the relevant row, column, and box to a list
+        List<List<SudokuTile>> tileGroups = new ArrayList<>();
+        tileGroups.add(tileToFill.getRow());
+        tileGroups.add(tileToFill.getColumn());
+        tileGroups.add(tileToFill.getBox());
+
+        // Check for invalid pairs of tiles in each group
+        for (List<SudokuTile> group : tileGroups) {
+            List<SudokuTile> potentialInvalidTiles = new ArrayList<>();
+
+            // Add any tiles with two candidates and the relevant candidate to the list of potentially invalid tiles
+            for (SudokuTile tile : group) {
+                if (tile.getNumCandidates() == 2 && tile.hasCandidate(candidate)) {
+                    potentialInvalidTiles.add(tile);
+                }
+            }
+
+            // Check if any potentially invalid tiles are an invalid pair
+            if (containsSameCandidatePair(potentialInvalidTiles)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns a boolean corresponding to whether the list of tiles has a pair with equivalent candidates
+     * @param tiles the list of SudokuTiles
+     * @return true if at least two tiles have equivalent candidates, false otherwise
+     */
+    private boolean containsSameCandidatePair(List<SudokuTile> tiles) {
+        Set<StringBuilder> candidateSet = new HashSet<>();
+
+        // Attempt to add all the candidate lists to the set
+        for (SudokuTile tile : tiles) {
+            if (!candidateSet.add(tile.getCandidates())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
