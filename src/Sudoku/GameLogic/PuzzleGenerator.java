@@ -129,6 +129,8 @@ public class PuzzleGenerator {
         Stack<SudokuTile> filledTileStack = new Stack<>();
         HashMap<SudokuTile, String[][]> candidateStates = new HashMap<>();
 
+        // TODO: Add more candidate removal strategies to speed up the algorithm
+
         // Repeat until all tiles are filled
         while (!unfilledCoordinates.isEmpty()) {
             // Check if the next tile has already been picked
