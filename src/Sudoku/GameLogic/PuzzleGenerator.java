@@ -126,6 +126,8 @@ public class PuzzleGenerator {
 
     private void fillGrid() {
         SudokuTile nextTile = null;
+        Stack<SudokuTile> filledTileStack = new Stack<>();
+        HashMap<SudokuTile, String[][]> candidateStates = new HashMap<>();
 
         // Repeat until all tiles are filled
         while (!unfilledCoordinates.isEmpty()) {
@@ -139,19 +141,42 @@ public class PuzzleGenerator {
             // Pick a random valid candidate
             int candidate = nextTile.getRandomCandidate();
 
-            // TODO: Implement invalid pair checking and backtracking
+            // Check if the candidate will create an invalid pair of tiles with the same single candidatez
+            if (createsInvalidPair(nextTile, candidate)) {
+                // Check if the invalid candidate is the only remaining candidate
+                if (nextTile.onlyCandidateEquals(candidate)) {
+                    // Set nextTile to the last filled tile
+                    nextTile = filledTileStack.pop();
+
+                    // Restore the state of candidates before filling that tile
+                    setBoardCandidates(candidateStates.get(nextTile));
+
+                    // Remove the candidate that was tried and failed
+                    nextTile.removeCandidate(nextTile.getValue());
+
+                    // Add nextTile back to the list of unfilledCoordinates
+                    addUnfilledCoordinates(nextTile.getCoordinates());
+
+                    continue;
+                }
+
+                // Remove the invalid candidate and try to fill the tile again
+                nextTile.removeCandidate(candidate);
+
+                continue;
+            }
 
             // Check if the candidate will invalidate relevant tiles
             SudokuTile firstInvalidatedTile = getFirstInvalidatedTile(nextTile, candidate);
 
             if (firstInvalidatedTile != null) {
-                // Remove the invalid candidate
                 // TODO: Implement backtracking here if the invalid candidate is the last
                 if (nextTile.onlyCandidateEquals(candidate)) {
                     System.out.println("Tiles filled: " + (81 - unfilledCoordinates.size()));
                     return;
                 }
 
+                // Remove the invalid candidate
                 nextTile.removeCandidate(candidate);
 
                 // Set the invalidated tile as the next tile to fill and iterate again
@@ -159,11 +184,17 @@ public class PuzzleGenerator {
                 continue;
             }
 
+            // Add the pre-fill candidate state to candidateStates
+            candidateStates.put(nextTile, getBoardCandidates());
+
             // Fill the tile and update relevant tiles
             fillTileAndUpdate(nextTile, candidate);
 
+            // Add the tile to the Stack of filled tiles
+            filledTileStack.push(nextTile);
+
             // Remove the tile from the list of unfilled coordinates
-            unfilledCoordinates.remove(nextTile.getCoordinates());
+            removeUnfilledCoordinates(nextTile.getCoordinates());
 
             nextTile = null;
         }
@@ -277,5 +308,39 @@ public class PuzzleGenerator {
         }
 
         return false;
+    }
+
+    /**
+     * Returns a 2D-array of the board's current state of candidates with the first dimension corresponding to the
+     * x-coordinate and the second dimension corresponding to the y-coordinate
+     * @return the 2D-array of candidates
+     */
+    private String[][] getBoardCandidates() {
+        SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
+        String[][] boardCandidates = new String[tileGrid.length][tileGrid.length];
+
+        // Add each candidate String to its place in boardCandidates
+        for (int row = 0; row < tileGrid.length; row++) {
+            for (int column = 0; column < tileGrid[0].length; column++) {
+                boardCandidates[column][row] = tileGrid[column][row].getCandidates().toString();
+            }
+        }
+
+        return boardCandidates;
+    }
+
+    /**
+     * Sets the candidates for each tile in the grid using a given 2D-array of candidates
+     * @param boardCandidates the 2D-array of candidates
+     */
+    private void setBoardCandidates(String[][] boardCandidates) {
+        SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
+
+        // Set the candidates for each tile in the grid
+        for (int row = 0; row < tileGrid.length; row++) {
+            for (int column = 0; column < tileGrid[0].length; column++) {
+                tileGrid[column][row].setCandidates(boardCandidates[column][row]);
+            }
+        }
     }
 }
