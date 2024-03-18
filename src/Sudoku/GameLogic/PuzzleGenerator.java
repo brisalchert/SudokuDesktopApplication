@@ -138,6 +138,14 @@ public class PuzzleGenerator {
                 nextTile = SudokuTile.getTileGrid()[nextCoordinates.x()][nextCoordinates.y()];
             }
 
+            // Check if a backtracked tile has no more candidates
+            if (nextTile.getNumCandidates() == 0) {
+                // Backtrack further
+                nextTile = backtrackToLastFilled(filledTileStack, candidateStates);
+
+                continue;
+            }
+
             // Pick a random valid candidate
             int candidate = nextTile.getRandomCandidate();
 
@@ -145,17 +153,7 @@ public class PuzzleGenerator {
             if (createsInvalidPair(nextTile, candidate)) {
                 // Check if the invalid candidate is the only remaining candidate
                 if (nextTile.onlyCandidateEquals(candidate)) {
-                    // Set nextTile to the last filled tile
-                    nextTile = filledTileStack.pop();
-
-                    // Restore the state of candidates before filling that tile
-                    setBoardCandidates(candidateStates.get(nextTile));
-
-                    // Remove the candidate that was tried and failed
-                    nextTile.removeCandidate(nextTile.getValue());
-
-                    // Add nextTile back to the list of unfilledCoordinates
-                    addUnfilledCoordinates(nextTile.getCoordinates());
+                    nextTile = backtrackToLastFilled(filledTileStack, candidateStates);
 
                     continue;
                 }
@@ -170,10 +168,11 @@ public class PuzzleGenerator {
             SudokuTile firstInvalidatedTile = getFirstInvalidatedTile(nextTile, candidate);
 
             if (firstInvalidatedTile != null) {
-                // TODO: Implement backtracking here if the invalid candidate is the last
+                // Check if the invalid candidate is the only remaining candidate
                 if (nextTile.onlyCandidateEquals(candidate)) {
-                    System.out.println("Tiles filled: " + (81 - unfilledCoordinates.size()));
-                    return;
+                    nextTile = backtrackToLastFilled(filledTileStack, candidateStates);
+
+                    continue;
                 }
 
                 // Remove the invalid candidate
@@ -201,6 +200,34 @@ public class PuzzleGenerator {
     }
 
     /**
+     * Backtracks to the last tile that was filled, restoring the old candidate state and removing that tile's last
+     * tried value from its candidates
+     * @param filledTileStack the Stack of filled tiles
+     * @param candidateStates a HashMap mapping SudokuTiles to the states of the board's candidates before they were
+     *                        filled
+     * @return the tile that was backtracked to
+     */
+    private SudokuTile backtrackToLastFilled(Stack<SudokuTile> filledTileStack,
+                                             HashMap<SudokuTile, String[][]> candidateStates) {
+        SudokuTile nextTile;
+
+        // Set nextTile to the last filled tile
+        nextTile = filledTileStack.pop();
+
+        // Restore the state of candidates before filling that tile
+        setBoardCandidates(candidateStates.get(nextTile));
+
+        // Remove the candidate that was tried and failed
+        nextTile.removeCandidate(nextTile.getValue());
+
+        // Add nextTile back to the list of unfilledCoordinates
+        addUnfilledCoordinates(nextTile.getCoordinates());
+        nextTile.setValue(0);
+
+        return nextTile;
+    }
+
+    /**
      * Returns the first tile that will be invalidated by a candidate placement, or null if no tiles are invalidated
      * @param tileToFill the tile in which the candidate is to be placed
      * @param candidate the value that will fill the tile
@@ -209,21 +236,21 @@ public class PuzzleGenerator {
     private SudokuTile getFirstInvalidatedTile(SudokuTile tileToFill, int candidate) {
         // Check tiles in the same row
         for (SudokuTile relevantTile : tileToFill.getRow()) {
-            if (relevantTile.onlyCandidateEquals(candidate)) {
+            if (relevantTile.onlyCandidateEquals(candidate) && !relevantTile.equals(tileToFill)) {
                 return relevantTile;
             }
         }
 
         // Check tiles in the same column
         for (SudokuTile relevantTile : tileToFill.getColumn()) {
-            if (relevantTile.onlyCandidateEquals(candidate)) {
+            if (relevantTile.onlyCandidateEquals(candidate) && !relevantTile.equals(tileToFill)) {
                 return relevantTile;
             }
         }
 
         // Check tiles in the same box
         for (SudokuTile relevantTile : tileToFill.getBox()) {
-            if (relevantTile.onlyCandidateEquals(candidate)) {
+            if (relevantTile.onlyCandidateEquals(candidate) && !relevantTile.equals(tileToFill)) {
                 return relevantTile;
             }
         }
