@@ -238,6 +238,53 @@ public class SudokuTile {
         return boxList;
     }
 
+    /**
+     * Gets a 2D-list of the rows of SudokuTiles in the tileGrid
+     * @return the list of rows
+     */
+    public static List<List<SudokuTile>> getRows() {
+        List<List<SudokuTile>> rowsList = new ArrayList<>();
+
+        // Add each row in the tileGrid
+        for (int rowIndex = 0; rowIndex < tileGrid.length; rowIndex++) {
+            rowsList.add(tileGrid[0][rowIndex].getRow());
+        }
+
+        return rowsList;
+    }
+
+    /**
+     * Gets a 2D-list of the columns of SudokuTiles in the tileGrid
+     * @return the list of columns
+     */
+    public static List<List<SudokuTile>> getColumns() {
+        List<List<SudokuTile>> columnsList = new ArrayList<>();
+
+        // Add each column in the tileGrid
+        for (int columnIndex = 0; columnIndex < tileGrid.length; columnIndex++) {
+            columnsList.add(tileGrid[columnIndex][0].getColumn());
+        }
+
+        return columnsList;
+    }
+
+    /**
+     * Gets a 2D-list of the boxes of SudokuTiles in the tileGrid
+     * @return the list of boxes
+     */
+    public static List<List<SudokuTile>> getBoxes() {
+        List<List<SudokuTile>> boxesList = new ArrayList<>();
+
+        // Add each box in the tileGrid
+        for (int rowIndex = 0; rowIndex < tileGrid.length; rowIndex += 3) {
+            for (int columnIndex = 0; columnIndex < tileGrid.length; columnIndex += 3) {
+                boxesList.add(tileGrid[columnIndex][rowIndex].getBox());
+            }
+        }
+
+        return boxesList;
+    }
+
     public boolean isEmpty() {
         return getValue() == null;
     }
