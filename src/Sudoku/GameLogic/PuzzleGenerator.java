@@ -133,6 +133,21 @@ public class PuzzleGenerator {
 
         // Repeat until all tiles are filled
         while (!unfilledCoordinates.isEmpty()) {
+            // Check for any singles using cross-hatch scanning
+            boolean crossHatchResult = crossHatchScan(filledTileStack, candidateStates);
+
+            // If the cross-hatch failed, backtrack
+            if (!crossHatchResult) {
+                nextTile = backtrackToLastFilled(filledTileStack, candidateStates);
+
+                continue;
+            }
+
+            // If the cross-hatch finished the board, exit the loop
+            if (unfilledCoordinates.isEmpty()) {
+                continue;
+            }
+
             // Check if the next tile has already been picked
             if (nextTile == null) {
                 // Get a random unfilled tile
@@ -151,7 +166,7 @@ public class PuzzleGenerator {
             // Pick a random valid candidate
             int candidate = nextTile.getRandomCandidate();
 
-            // Check if the candidate will create an invalid pair of tiles with the same single candidatez
+            // Check if the candidate will create an invalid pair of tiles with the same single candidate
             if (createsInvalidPair(nextTile, candidate)) {
                 // Check if the invalid candidate is the only remaining candidate
                 if (nextTile.onlyCandidateEquals(candidate)) {
@@ -185,17 +200,8 @@ public class PuzzleGenerator {
                 continue;
             }
 
-            // Add the pre-fill candidate state to candidateStates
-            candidateStates.put(nextTile, getBoardCandidates());
-
-            // Fill the tile and update relevant tiles
-            fillTileAndUpdate(nextTile, candidate);
-
-            // Add the tile to the Stack of filled tiles
-            filledTileStack.push(nextTile);
-
-            // Remove the tile from the list of unfilled coordinates
-            removeUnfilledCoordinates(nextTile.getCoordinates());
+            // Fill the tile and update method variables
+            updateFillStack(nextTile, candidate, filledTileStack, candidateStates);
 
             nextTile = null;
         }
@@ -285,6 +291,103 @@ public class PuzzleGenerator {
         for (SudokuTile boxTile : tile.getBox()) {
             boxTile.removeCandidate(candidate);
         }
+    }
+
+    /**
+     * Fills a tile and updates relevant candidates, while also updating the Stack of filled tiles and the HashMap of
+     * candidate states
+     * @param tile the tile being filled
+     * @param candidate the candidate to fill the tile with
+     * @param filledTileStack the Stack of last-filled tiles
+     * @param candidateStates the HashMap of previous candidate states
+     */
+    private void updateFillStack(SudokuTile tile, int candidate, Stack<SudokuTile> filledTileStack,
+                                 HashMap<SudokuTile, String[][]> candidateStates) {
+        // Add the pre-fill candidate state to candidateStates
+        candidateStates.put(tile, getBoardCandidates());
+
+        // Fill the tile and update relevant tiles
+        fillTileAndUpdate(tile, candidate);
+
+        // Add the tile to the Stack of filled tiles
+        filledTileStack.push(tile);
+
+        // Remove the tile from the list of unfilled coordinates
+        removeUnfilledCoordinates(tile.getCoordinates());
+    }
+
+    private boolean crossHatchScan(Stack<SudokuTile> filledTileStack, HashMap<SudokuTile, String[][]> candidateStates) {
+        // Save the starting number of unfilledCoordinates
+        int startingNumUnfilled = unfilledCoordinates.size();
+
+        // Check each unfilled tile for naked singles (tiles with only one remaining candidate)
+        boolean nakedSinglesResult = checkNakedSingles(filledTileStack, candidateStates);
+
+        // Stop checking if board is invalid
+        if (!nakedSinglesResult) {
+            return false;
+        }
+
+        // Check each box, row, and column for hidden singles (only possible cell for a candidate)
+        boolean hiddenSinglesResult = checkHiddenSingles(filledTileStack, candidateStates);
+
+        // Stop checking if board is invalid
+        if (!hiddenSinglesResult) {
+            return false;
+        }
+
+        // Call method recursively until no more singles can be found
+        if (unfilledCoordinates.size() != startingNumUnfilled) {
+            return crossHatchScan(filledTileStack, candidateStates);
+        }
+
+        // Return true if no tiles were invalidated
+        return true;
+    }
+
+    /**
+     * Checks the set of unfilled tiles for "naked singles" -- tiles with only one remaining candidate -- and fills
+     * any that are found.
+     * @param filledTileStack the Stack of last-filled tiles
+     * @param candidateStates the HashMap of previous candidate states
+     * @return true if successful, false if the board state is invalid
+     */
+    private boolean checkNakedSingles(Stack<SudokuTile> filledTileStack, HashMap<SudokuTile, String[][]> candidateStates) {
+        // Create a copy of unfilledCoordinates (to avoid concurrent modification)
+        Set<Coordinates> unfilledCoordinatesCopy = new HashSet<>(unfilledCoordinates);
+
+        // Check each unfilled tile for a naked single
+        for (Coordinates unfilledCoordinates : unfilledCoordinatesCopy) {
+            SudokuTile unfilledTile = SudokuTile.getTileGrid()[unfilledCoordinates.x()][unfilledCoordinates.y()];
+
+            // Fill the tile if it only has one candidate
+            if (unfilledTile.getNumCandidates() == 1) {
+                int candidate = Integer.parseInt(unfilledTile.getCandidates().toString());
+
+                // Check if the candidate will invalidate other tiles
+                SudokuTile firstInvalidTile = getFirstInvalidatedTile(unfilledTile, candidate);
+
+                // If a tile is invalidated, stop checking and return
+                if (firstInvalidTile != null) {
+                    return false;
+                }
+
+                // Update variables for fillGrid()
+                updateFillStack(unfilledTile, candidate, filledTileStack, candidateStates);
+            }
+        }
+
+        // If no tiles are invalidated, return true
+        return true;
+    }
+
+    private boolean checkHiddenSingles(Stack<SudokuTile> filledTileStack,
+                                    HashMap<SudokuTile, String[][]> candidateStates) {
+        // Check each box for a hidden single
+
+
+        // If no tiles are invalidated, return true
+        return true;
     }
 
     /**
