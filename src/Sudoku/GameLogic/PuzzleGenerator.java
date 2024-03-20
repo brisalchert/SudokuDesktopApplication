@@ -128,11 +128,27 @@ public class PuzzleGenerator {
         SudokuTile nextTile = null;
         Stack<SudokuTile> filledTileStack = new Stack<>();
         HashMap<SudokuTile, String[][]> candidateStates = new HashMap<>();
+        int count = 0;
+        int maxIterations = 500;
 
         // TODO: Add more candidate removal strategies to speed up the algorithm
 
         // Repeat until all tiles are filled
         while (!unfilledCoordinates.isEmpty()) {
+            count++;
+
+            // If filling the grid takes too many iterations, reset the board to start over
+            if (count > maxIterations) {
+                while (!filledTileStack.isEmpty()) {
+                    nextTile = filledTileStack.pop();
+                    addUnfilledCoordinates(nextTile.getCoordinates());
+                }
+
+                setBoardCandidates(candidateStates.get(nextTile));
+
+                break;
+            }
+
             // Check for any singles using cross-hatch scanning
             boolean crossHatchResult = crossHatchScan(filledTileStack, candidateStates);
 
@@ -204,6 +220,11 @@ public class PuzzleGenerator {
             updateFillStack(nextTile, candidate, filledTileStack, candidateStates);
 
             nextTile = null;
+        }
+
+        // If the board was not filled in the maximum number of iterations, try again
+        if (!unfilledCoordinates.isEmpty()) {
+            fillGrid();
         }
     }
 
