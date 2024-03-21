@@ -6,6 +6,7 @@ import Sudoku.UserInterface.SudokuTile;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 public class Tests {
@@ -28,6 +29,48 @@ public class Tests {
 
         // Set the candidates for the invalidated tile to the random candidate
         tileToInvalidate.setCandidates(Integer.toString(candidate));
+    }
+
+    /**
+     * Prints the current grid state to the console
+     */
+    public static void printGrid() {
+        SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
+        int rowIndex = 1;
+
+        for (List<SudokuTile> row : SudokuTile.getRows()) {
+            int columnIndex = 1;
+            for (SudokuTile tile : row) {
+                // Print "*" if the tile's value is null
+                if (tile.isEmpty()) {
+                    System.out.print("* ");
+                }
+                else {
+                    System.out.print(tile.getValue() + " ");
+                }
+
+                // Print an extra space between boxes
+                if (columnIndex == 3 || columnIndex == 6) {
+                    System.out.print(" ");
+                }
+
+                columnIndex++;
+            }
+
+            System.out.println();
+
+            // Print an extra line between boxes
+            if (rowIndex == 3 || rowIndex == 6) {
+                System.out.println();
+            }
+
+            rowIndex++;
+        }
+
+        // Print separator between grids
+        System.out.println();
+        System.out.println("--------------------");
+        System.out.println();
     }
 
     /**
