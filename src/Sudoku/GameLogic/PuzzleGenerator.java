@@ -251,7 +251,7 @@ public class PuzzleGenerator {
 
         // Add nextTile back to the list of unfilledCoordinates
         addUnfilledCoordinates(nextTile.getCoordinates());
-        nextTile.setValue(0);
+        nextTile.setValue(null);
 
         return nextTile;
     }
