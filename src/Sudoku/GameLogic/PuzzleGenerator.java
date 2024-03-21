@@ -1,5 +1,6 @@
 package Sudoku.GameLogic;
 
+import Sudoku.Testing.Tests;
 import Sudoku.UserInterface.Coordinates;
 import Sudoku.UserInterface.SudokuTile;
 import java.util.*;
@@ -17,7 +18,8 @@ public class PuzzleGenerator {
     }
 
     /**
-     * Sets the candidates for each tile in the grid to all possible values and adds all tiles to unfilledCoordinates
+     * Sets the candidates for each tile in the grid to all possible values, removing any values present, and adds all
+     * tiles to unfilledCoordinates
      */
     private void setInitialCandidates() {
         // Add all tiles to the set of unfilled coordinates
@@ -25,6 +27,10 @@ public class PuzzleGenerator {
 
         for (SudokuTile[] column : SudokuTile.getTileGrid()) {
             for (SudokuTile tile : column) {
+                if (!tile.isEmpty()) {
+                    tile.setValue(null);
+                }
+
                 tile.setCandidates("123456789");
             }
         }
@@ -122,6 +128,120 @@ public class PuzzleGenerator {
 
             value++;
         }
+
+        // Check for an invalid triple in one of the boxes
+        if (boxesHaveInvalidTriple()) {
+            // Re-initialize the board
+            setInitialCandidates();
+
+            // Re-assign the first nine numbers
+            assignFirstNine();
+        }
+    }
+
+    private boolean boxesHaveInvalidTriple() {
+        for (List<SudokuTile> box : SudokuTile.getBoxes()) {
+            ArrayList<SudokuTile> twoOrFewerCandidates  = new ArrayList<>();
+
+            // Add all tiles with 2 candidates or fewer to the ArrayList
+            for (SudokuTile tile : box) {
+                if (tile.getNumCandidates() <= 2) {
+                    twoOrFewerCandidates.add(tile);
+                }
+            }
+
+            // 9 choose 3 = 84 possible combinations of tiles at maximum
+            Set<Set<SudokuTile>> combinations = getAllCombinationsOfTiles(twoOrFewerCandidates, 3);
+
+            // If any particular combination contains tiles with two or fewer candidates, it is an invalid triple
+            for (Set<SudokuTile> combination: combinations) {
+                // Create a set to store the unique candidates in the tiles
+                Set<Integer> candidateSet = new HashSet<>();
+
+                for (SudokuTile tile : combination) {
+                    StringBuilder candidates = tile.getCandidates();
+
+                    // Add each candidate to the set
+                    for (int index = 0; index < candidates.length(); index++) {
+                        int candidate = Integer.parseInt(candidates.substring(index, (index + 1)));
+
+                        candidateSet.add(candidate);
+                    }
+                }
+
+                // If candidateSet has two or fewer candidates, return true
+                if (candidateSet.size() <= 2) {
+                    return true;
+                }
+            }
+        }
+
+        // If no combination has fewer than 3 candidates, return false
+        return false;
+    }
+
+    /**
+     * Utility for getting the every combination of the items in an ArrayList of SudokuTiles
+     * (https://www.geeksforgeeks.org/print-all-possible-combinations-of-r-elements-in-a-given-array-of-size-n/)
+     * @param combinationSet the output set of all combinations of size combinationSize
+     * @param tileSet the input ArrayList of SudokuTiles
+     * @param currentCombination a temporary ArrayList for storing the current combination of tiles being processed
+     * @param startIndex the starting index to select combination items from
+     * @param endIndex the ending index to select combination items from
+     * @param currentItemIndex the index of the next item to be placed in currentCombination
+     * @param combinationSize the number of items in each combination
+     */
+    private void combinationsOfTiles(Set<Set<SudokuTile>> combinationSet, ArrayList<SudokuTile> tileSet,
+                                     ArrayList<SudokuTile> currentCombination, int startIndex,
+                                     int endIndex, int currentItemIndex, int combinationSize) {
+        // If the current combination has (combinationSize) elements, add it to the output set
+        if (currentItemIndex == combinationSize) {
+            Set<SudokuTile> combination = new HashSet<>();
+
+            for (int i = 0; i < combinationSize; i++) {
+                combination.add(currentCombination.get(i));
+            }
+
+            // Add the current combination to the output set
+            combinationSet.add(combination);
+
+            return;
+        }
+
+        // Add every possible element to the current index of currentCombination
+        // Condition ensures that the number of unused items (itemsInList - index) is greater than or equal to the
+        // number of remaining spots in the current combination
+        int itemsInList = endIndex + 1;
+        int remainingSpotsInCombo = combinationSize - currentItemIndex;
+
+        for (int tileSetIndex = startIndex;
+             tileSetIndex <= endIndex && (itemsInList - tileSetIndex) >= remainingSpotsInCombo;
+             tileSetIndex++) {
+            // Add the item at tileSetIndex to currentCombination
+            currentCombination.add(currentItemIndex, tileSet.get(tileSetIndex));
+
+            // Get combinations from the remaining elements in the tileSet
+            combinationsOfTiles(combinationSet, tileSet, currentCombination, startIndex + 1, endIndex,
+                    currentItemIndex + 1, combinationSize);
+        }
+    }
+
+    /**
+     * Gets a Set of each combination (of size combinationSize) of the input ArrayList of SudokuTiles
+     * @param tileSet the input ArrayList of SudokuTiles to get combinations from
+     * @param combinationSize the number of items in each combination
+     * @return the Set of all combinations
+     */
+    private Set<Set<SudokuTile>> getAllCombinationsOfTiles(ArrayList<SudokuTile> tileSet, int combinationSize) {
+        Set<Set<SudokuTile>> combinationSet = new HashSet<>();
+        // Create temporary ArrayList to store the combination items during method execution
+        ArrayList<SudokuTile> currentCombination = new ArrayList<>(combinationSize);
+
+        // Get the combinations
+        combinationsOfTiles(combinationSet, tileSet, currentCombination, 0, (tileSet.size() - 1),
+                0, combinationSize);
+
+        return combinationSet;
     }
 
     private void fillGrid() {
@@ -142,6 +262,7 @@ public class PuzzleGenerator {
                 while (!filledTileStack.isEmpty()) {
                     nextTile = filledTileStack.pop();
                     addUnfilledCoordinates(nextTile.getCoordinates());
+                    nextTile.setValue(null);
                 }
 
                 setBoardCandidates(candidateStates.get(nextTile));
