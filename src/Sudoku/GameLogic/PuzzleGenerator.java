@@ -254,7 +254,7 @@ public class PuzzleGenerator {
         Stack<SudokuTile> filledTileStack = new Stack<>();
         HashMap<SudokuTile, String[][]> candidateStates = new HashMap<>();
         int count = 0;
-        int maxIterations = 500;
+        int maxIterations = 100;
 
         // TODO: Add more candidate removal strategies to speed up the algorithm
 
