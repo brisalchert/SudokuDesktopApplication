@@ -27,7 +27,6 @@ public class PuzzleGenerator {
             fillGrid();
         }
         catch (EmptyStackException error) {
-            System.out.println("Caught invalid triple");
             initializeFullGrid();
         }
     }
