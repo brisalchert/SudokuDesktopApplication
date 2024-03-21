@@ -294,17 +294,21 @@ public class SudokuTile {
     }
 
     /**
-     * Sets the value associated with the SudokuTile and displays it if it is not 0
+     * Sets the value associated with the SudokuTile and displays it if it is not null
      * @param value the value to set for the SudokuTile
      */
-    public void setValue(int value) {
-        this.value = value;
+    public void setValue(Integer value) {
+        // Do not accept a value not in the range 1-9 unless it is null
+        if (value == null || (value >= 1 && value <= 9)) {
+            this.value = value;
 
-        if (value == 0) {
-            tileText.setText("");
-        }
-        else {
-            tileText.setText(String.valueOf(value));
+            // Do not display value of null
+            if (value == null) {
+                tileText.setText("");
+            }
+            else {
+                tileText.setText(String.valueOf(value));
+            }
         }
     }
 
