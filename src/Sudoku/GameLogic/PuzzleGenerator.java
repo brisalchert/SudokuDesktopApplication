@@ -12,9 +12,24 @@ public class PuzzleGenerator {
      * Constructor: Creates a PuzzleGenerator object and calls puzzle generation methods
      */
     public PuzzleGenerator() {
+        initializeFullGrid();
+    }
+
+    /**
+     * Initializes a valid, randomly-generated full Sudoku grid
+     */
+    private void initializeFullGrid() {
         setInitialCandidates();
         assignFirstNine();
-        fillGrid();
+
+        // Attempt to fill the grid, restarting from scratch if an invalid triple (rarely) occurs
+        try {
+            fillGrid();
+        }
+        catch (EmptyStackException error) {
+            System.out.println("Caught invalid triple");
+            initializeFullGrid();
+        }
     }
 
     /**
@@ -128,15 +143,6 @@ public class PuzzleGenerator {
 
             value++;
         }
-
-        // Check for an invalid triple in one of the boxes
-        if (boxesHaveInvalidTriple()) {
-            // Re-initialize the board
-            setInitialCandidates();
-
-            // Re-assign the first nine numbers
-            assignFirstNine();
-        }
     }
 
     private boolean boxesHaveInvalidTriple() {
@@ -244,7 +250,7 @@ public class PuzzleGenerator {
         return combinationSet;
     }
 
-    private void fillGrid() {
+    private void fillGrid() throws EmptyStackException {
         SudokuTile nextTile = null;
         Stack<SudokuTile> filledTileStack = new Stack<>();
         HashMap<SudokuTile, String[][]> candidateStates = new HashMap<>();
@@ -356,9 +362,11 @@ public class PuzzleGenerator {
      * @param candidateStates a HashMap mapping SudokuTiles to the states of the board's candidates before they were
      *                        filled
      * @return the tile that was backtracked to
+     * @throws EmptyStackException when an invalid triple occurs in assignFirstNine()
      */
     private SudokuTile backtrackToLastFilled(Stack<SudokuTile> filledTileStack,
-                                             HashMap<SudokuTile, String[][]> candidateStates) {
+                                             HashMap<SudokuTile, String[][]> candidateStates)
+            throws EmptyStackException {
         SudokuTile nextTile;
 
         // Set nextTile to the last filled tile
