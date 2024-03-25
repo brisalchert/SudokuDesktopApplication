@@ -321,20 +321,24 @@ public class SudokuTile {
      * Converts the tileGrid's values to an integer array and returns it
      * @return the integer array of the tileGrid's values
      */
-    public static int[][] tileGridToArray() {
-        int[][] board = new int[tileGrid.length][tileGrid[0].length];
+    public static ArrayList<ArrayList<Integer>> tileGridToArrayList() {
+        ArrayList<ArrayList<Integer>> board = new ArrayList<>();
 
-        for (int columnIndex = 0; columnIndex < tileGrid.length; columnIndex++) {
-            for (int rowIndex = 0; rowIndex < tileGrid[columnIndex].length; rowIndex++) {
+        for (int rowIndex = 0; rowIndex < tileGrid.length; rowIndex++) {
+            ArrayList<Integer> row = new ArrayList<>();
+
+            for (int columnIndex = 0; columnIndex < tileGrid[rowIndex].length; columnIndex++) {
                 Integer value = tileGrid[columnIndex][rowIndex].getValue();
 
                 if (value != null) {
-                    board[rowIndex][columnIndex] = value;
+                    row.add(value);
                 }
                 else {
-                    board[rowIndex][columnIndex] = 0;
+                    row.add(0);
                 }
             }
+
+            board.add(row);
         }
 
         return board;
