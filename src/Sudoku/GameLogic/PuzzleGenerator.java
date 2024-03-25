@@ -256,8 +256,6 @@ public class PuzzleGenerator {
         int count = 0;
         int maxIterations = 100;
 
-        // TODO: Add more candidate removal strategies to speed up the algorithm
-
         // Repeat until all tiles are filled
         while (!unfilledCoordinates.isEmpty()) {
             count++;
