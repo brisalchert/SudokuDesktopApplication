@@ -671,6 +671,7 @@ public class PuzzleGenerator {
 
     /**
      * Increments solutionCount for each unique solution the current board has
+     * https://www.101computing.net/backtracking-algorithm-sudoku-solver/
      * @param tileGrid the 2D-ArrayList of values on the tileGrid
      */
     private void updateSolutionCount(ArrayList<ArrayList<Integer>> tileGrid) {
