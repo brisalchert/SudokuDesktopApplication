@@ -752,14 +752,6 @@ public class PuzzleGenerator {
                                 // If the grid is full, increment the solution count and remove the previous value.
                                 // Otherwise, continue to next empty cell
                                 if (tileGridFull(tileGrid)) {
-                                    for (ArrayList<Integer> row : tileGrid) {
-                                        for (Integer number : row) {
-                                            System.out.print(number);
-                                        }
-                                    }
-
-                                    System.out.println();
-
                                     solutionCount++;
                                     tileGrid.get(rowIndex).set(columnIndex, 0);
 
