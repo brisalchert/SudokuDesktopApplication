@@ -441,6 +441,40 @@ public class PuzzleGenerator {
     }
 
     /**
+     * Sets a tile's value to "null" and updates candidates for relevant tiles
+     * @param tile the SudokuTile to empty
+     */
+    private void emptyTileAndUpdate(SudokuTile tile) {
+        // Save the current value of the tile
+        int previousValue = tile.getValue();
+
+        // Empty the tile
+        tile.setValue(null);
+
+        // Update candidates for tiles in the same row, column, and box
+        restoreCandidates(tile.getRow(), previousValue);
+        restoreCandidates(tile.getColumn(), previousValue);
+        restoreCandidates(tile.getBox(), previousValue);
+    }
+
+    /**
+     * Restores a missing candidate to each tile in a group if that candidate is valid
+     * @param group the group of SudokuTiles to restore candidates for
+     * @param candidate the candidate to restore
+     */
+    private void restoreCandidates(List<SudokuTile> group, int candidate) {
+        for (SudokuTile tile : group) {
+            // Check if the value is in a relevant row or column
+            if (!(SudokuTile.collectionHasValue(tile.getRow(), candidate)) &&
+                    !(SudokuTile.collectionHasValue(tile.getColumn(), candidate)) &&
+                    !(SudokuTile.collectionHasValue(tile.getBox(), candidate))) {
+                // Add back the candidate
+                tile.addCandidate(candidate);
+            }
+        }
+    }
+
+    /**
      * Fills a tile and updates relevant candidates, while also updating the Stack of filled tiles and the HashMap of
      * candidate states
      * @param tile the tile being filled

@@ -285,6 +285,22 @@ public class SudokuTile {
         return boxesList;
     }
 
+    /**
+     * Checks if any tile in the given collection of tiles has the specified value
+     * @param collection the collection of SudokuTiles
+     * @param value the value to check for
+     * @return true if the value is found, false otherwise
+     */
+    public static boolean collectionHasValue(List<SudokuTile> collection, int value) {
+        for (SudokuTile tile : collection) {
+            if (tile.getValue() == value) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public boolean isEmpty() {
         return getValue() == null;
     }
