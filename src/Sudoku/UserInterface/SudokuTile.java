@@ -305,7 +305,7 @@ public class SudokuTile {
      * Returns a boolean value corresponding to whether the tileGrid is full or not
      * @return true if the tileGrid is full, false otherwise
      */
-    public boolean tileGridFull() {
+    public static boolean tileGridFull() {
         for (SudokuTile[] column : tileGrid) {
             for (SudokuTile tile : column) {
                 if (tile.getValue() == null) {
