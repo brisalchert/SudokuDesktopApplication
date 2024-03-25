@@ -7,6 +7,7 @@ import java.util.*;
 
 public class PuzzleGenerator {
     private Set<Coordinates> unfilledCoordinates;
+    private int solutionCount;
 
     /**
      * Constructor: Creates a PuzzleGenerator object and calls puzzle generation methods
@@ -652,6 +653,160 @@ public class PuzzleGenerator {
         }
 
         // If no tiles are invalidated, return true
+        return true;
+    }
+
+    /**
+     * Gets the number of unique solutions for the current board
+     * @return an integer number of unique solutions for the current board
+     */
+    private int getSolutionCount() {
+        ArrayList<ArrayList<Integer>> tileGrid = SudokuTile.tileGridToArrayList();
+        solutionCount = 0;
+
+        updateSolutionCount(tileGrid);
+
+        return solutionCount;
+    }
+
+    /**
+     * Increments solutionCount for each unique solution the current board has
+     * @param tileGrid the 2D-ArrayList of values on the tileGrid
+     */
+    private void updateSolutionCount(ArrayList<ArrayList<Integer>> tileGrid) {
+        // Find the next empty tile (loop breaks, so not O(n^2) runtime)
+        for (int tileIndex = 0; tileIndex < 81; tileIndex++) {
+            int rowIndex = tileIndex / 9;
+            int columnIndex = tileIndex % 9;
+
+            if (tileGrid.get(rowIndex).get(columnIndex) == 0) {
+                // Try to fill the tile with every possible value
+                for (int value = 1; value <= 9; value++) {
+                    // Check that the value is not present in the row
+                    if (!tileGrid.get(rowIndex).contains(value)) {
+                        // Check that the value is not present in the column
+                        boolean columnHasValue = false;
+
+                        for (ArrayList<Integer> row : tileGrid) {
+                            if (row.get(columnIndex) == value) {
+                                columnHasValue = true;
+                                break;
+                            }
+                        }
+
+                        if (!columnHasValue) {
+                            ArrayList<Integer> box;
+
+                            // Identify which box the tile is in
+                            if (rowIndex < 3) {
+                                if (columnIndex < 3) {
+                                    box = getBoxArrayList(tileGrid, 0, 0);
+                                }
+                                else if (columnIndex < 6) {
+                                    box = getBoxArrayList(tileGrid, 0, 3);
+                                }
+                                else {
+                                    box = getBoxArrayList(tileGrid, 0, 6);
+                                }
+                            }
+                            else if (rowIndex < 6) {
+                                if (columnIndex < 3) {
+                                    box = getBoxArrayList(tileGrid, 3, 0);
+                                }
+                                else if (columnIndex < 6) {
+                                    box = getBoxArrayList(tileGrid, 3, 3);
+                                }
+                                else {
+                                    box = getBoxArrayList(tileGrid, 3, 6);
+                                }
+                            }
+                            else {
+                                if (columnIndex < 3) {
+                                    box = getBoxArrayList(tileGrid, 6, 0);
+                                }
+                                else if (columnIndex < 6) {
+                                    box = getBoxArrayList(tileGrid, 6, 3);
+                                }
+                                else {
+                                    box = getBoxArrayList(tileGrid, 6, 6);
+                                }
+                            }
+
+                            // Check that the value is not present in the box
+                            if (!box.contains(value)) {
+                                // Set the tile's value
+                                tileGrid.get(rowIndex).set(columnIndex, value);
+
+
+
+                                // If the grid is full, increment the solution count and remove the previous value.
+                                // Otherwise, continue to next empty cell
+                                if (tileGridFull(tileGrid)) {
+                                    for (ArrayList<Integer> row : tileGrid) {
+                                        for (Integer number : row) {
+                                            System.out.print(number);
+                                        }
+                                    }
+
+                                    System.out.println();
+
+                                    solutionCount++;
+                                    tileGrid.get(rowIndex).set(columnIndex, 0);
+
+                                    return;
+                                }
+                                else {
+                                    updateSolutionCount(tileGrid);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // If no value works for the tile or all values have been checked, reset the tile's value and backtrack
+                // (Backtracking happens through the recursion stack)
+                tileGrid.get(rowIndex).set(columnIndex, 0);
+
+                break;
+            }
+        }
+    }
+
+    /**
+     * Gets an ArrayList of all values in the box of the 2D-ArrayList tileGrid that starts at the given indices
+     * @param tileGrid the 2D-ArrayList of tile values
+     * @param startingRowIndex the starting row index of the box
+     * @param startingColumnIndex the starting column index of the box
+     * @return an ArrayList of the box values
+     */
+    private ArrayList<Integer> getBoxArrayList(ArrayList<ArrayList<Integer>> tileGrid, int startingRowIndex,
+                                               int startingColumnIndex) {
+        ArrayList<Integer> box = new ArrayList<>();
+
+        // Add all values within the box
+        for (int i = startingRowIndex; i < (startingRowIndex + 3); i++) {
+            for (int j = startingColumnIndex; j < (startingColumnIndex + 3); j++) {
+                box.add(tileGrid.get(i).get(j));
+            }
+        }
+
+        return box;
+    }
+
+    /**
+     * Checks if the 2D-ArrayList tileGrid is full, returning true if all values are set to non-zero
+     * @param tileGrid the 2D-ArrayList of grid values
+     * @return true if the grid is filled, false otherwise
+     */
+    private boolean tileGridFull(ArrayList<ArrayList<Integer>> tileGrid) {
+        for (ArrayList<Integer> row : tileGrid) {
+            for (Integer value : row) {
+                if (value == 0) {
+                    return false;
+                }
+            }
+        }
+
         return true;
     }
 
