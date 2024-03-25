@@ -664,17 +664,26 @@ public class PuzzleGenerator {
         ArrayList<ArrayList<Integer>> tileGrid = SudokuTile.tileGridToArrayList();
         solutionCount = 0;
 
-        updateSolutionCount(tileGrid);
+        updateSolutionCount(tileGrid, null);
 
         return solutionCount;
     }
 
     /**
-     * Increments solutionCount for each unique solution the current board has
+     * Increments solutionCount for each unique solution the current board has up to a specified maximum number
      * https://www.101computing.net/backtracking-algorithm-sudoku-solver/
      * @param tileGrid the 2D-ArrayList of values on the tileGrid
+     * @param maxSolutions the maximum number of solutions to find, or 0 for no maximum
      */
-    private void updateSolutionCount(ArrayList<ArrayList<Integer>> tileGrid) {
+    private void updateSolutionCount(ArrayList<ArrayList<Integer>> tileGrid, Integer maxSolutions) {
+        // If the maximum number of solutions has been reached, stop searching for new solutions
+        // If maxSolutions is null, ignore
+        if (maxSolutions != null) {
+            if (solutionCount == maxSolutions) {
+                return;
+            }
+        }
+
         // Find the next empty tile (loop breaks, so not O(n^2) runtime)
         for (int tileIndex = 0; tileIndex < 81; tileIndex++) {
             int rowIndex = tileIndex / 9;
@@ -757,7 +766,7 @@ public class PuzzleGenerator {
                                     return;
                                 }
                                 else {
-                                    updateSolutionCount(tileGrid);
+                                    updateSolutionCount(tileGrid, maxSolutions);
                                 }
                             }
                         }
