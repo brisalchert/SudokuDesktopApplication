@@ -140,4 +140,23 @@ public class Tests {
             }
         }
     }
+
+    /**
+     * Sets all the values on the board using a 2D-array of values, where 0 specifies an empty tile
+     * @param boardValues the 2D-array of values to fill the board with
+     */
+    public static void setBoard(int[][] boardValues) {
+        SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
+
+        for (int columnIndex = 0; columnIndex < tileGrid.length; columnIndex++) {
+            for (int rowIndex = 0; rowIndex < tileGrid[columnIndex].length; rowIndex++) {
+                if (boardValues[rowIndex][columnIndex] != 0) {
+                    tileGrid[columnIndex][rowIndex].setValue(boardValues[rowIndex][columnIndex]);
+                }
+                else {
+                    tileGrid[columnIndex][rowIndex].setValue(null);
+                }
+            }
+        }
+    }
 }
