@@ -452,6 +452,9 @@ public class PuzzleGenerator {
         // Empty the tile
         tile.setValue(null);
 
+        // Update candidates for the empty tile
+        restoreCandidates(tile);
+
         // Update candidates for tiles in the same row, column, and box
         restoreCandidates(tile.getRow(), previousValue);
         restoreCandidates(tile.getColumn(), previousValue);
@@ -465,7 +468,24 @@ public class PuzzleGenerator {
      */
     private void restoreCandidates(List<SudokuTile> group, int candidate) {
         for (SudokuTile tile : group) {
-            // Check if the value is in a relevant row or column
+            // Check if the value is in a relevant row, column, or box
+            if (!(SudokuTile.collectionHasValue(tile.getRow(), candidate)) &&
+                    !(SudokuTile.collectionHasValue(tile.getColumn(), candidate)) &&
+                    !(SudokuTile.collectionHasValue(tile.getBox(), candidate))) {
+                // Add back the candidate
+                tile.addCandidate(candidate);
+            }
+        }
+    }
+
+    /**
+     * Restores any missing candidates to a tile
+     * @param tile the tile to restore candidates for
+     */
+    private void restoreCandidates(SudokuTile tile) {
+        // Try to restore each candidate
+        for (int candidate = 1; candidate <= 9; candidate++) {
+            // Check if the value is in the same row, column, or box
             if (!(SudokuTile.collectionHasValue(tile.getRow(), candidate)) &&
                     !(SudokuTile.collectionHasValue(tile.getColumn(), candidate)) &&
                     !(SudokuTile.collectionHasValue(tile.getBox(), candidate))) {
