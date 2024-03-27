@@ -1,21 +1,19 @@
 package Sudoku.UserInterface;
 
-public record Coordinates(int x, int y) {
+public record Coordinates(int row, int column) {
     /**
-     * Gets the x coordinate of this Coordinates object
-     * @return the x coordinate
+     * Gets the row coordinate of this Coordinates object
+     * @return the row coordinate
      */
-    @Override
-    public int x() {
-        return x;
+    public int row() {
+        return row;
     }
 
     /**
-     * Gets the y coordinate of this Coordinates object
-     * @return the y coordinate
+     * Gets the column coordinate of this Coordinates object
+     * @return the column coordinate
      */
-    @Override
-    public int y() {
-        return y;
+    public int column() {
+        return column;
     }
 }

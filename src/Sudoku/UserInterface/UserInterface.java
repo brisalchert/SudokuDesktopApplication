@@ -84,7 +84,7 @@ public class UserInterface {
         // Create a 3x3 grid of boxes
         for (int row = 0; row < boxGridWidthAndHeight; row++) {
             for (int column = 0; column < boxGridWidthAndHeight; column++) {
-                drawSudokuBox(boxGrid, column, row);
+                drawSudokuBox(boxGrid, row, column);
             }
         }
 
@@ -98,10 +98,10 @@ public class UserInterface {
     }
 
     // Indices will be used for alternating tile colors
-    private void drawSudokuBox(GridPane boxGrid, int xIndex, int yIndex) {
+    private void drawSudokuBox(GridPane boxGrid, int rowIndex, int columnIndex) {
         GridPane box = new GridPane();
         int boxWidthAndHeight = 3;
-        int gridRow = (3 * yIndex);
+        int gridRow = (3 * rowIndex);
         int gridColumn;
 
         // Set spacing between tiles
@@ -110,16 +110,16 @@ public class UserInterface {
 
         // Create one 3x3 box of 9 tiles
         for (int boxRow = 0; boxRow < boxWidthAndHeight; boxRow++) {
-            gridColumn = (3*xIndex);
+            gridColumn = (3*columnIndex);
 
             for (int boxColumn = 0; boxColumn < boxWidthAndHeight; boxColumn++) {
                 Rectangle tileBackground = new Rectangle(64, 64);
                 tileBackground.setFill(TILE_BACKGROUND_COLOR);
-                box.add(tileBackground, boxColumn, boxRow);
+                box.add(tileBackground, boxRow, boxColumn);
 
                 // Assign tile coordinates relative to the entire grid
-                SudokuTile tile = new SudokuTile(gridColumn, gridRow);
-                box.add(tile.getTileNode(), boxColumn, boxRow);
+                SudokuTile tile = new SudokuTile(gridRow, gridColumn);
+                box.add(tile.getTileNode(), boxRow, boxColumn);
 
                 gridColumn++;
             }
@@ -128,7 +128,7 @@ public class UserInterface {
         }
 
         // Add the box to the boxGrid
-        boxGrid.add(box, xIndex, yIndex);
+        boxGrid.add(box, rowIndex, columnIndex);
     }
 
     private void drawGridLines(StackPane board) {

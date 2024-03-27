@@ -40,8 +40,8 @@ public class PuzzleGenerator {
         // Add all tiles to the set of unfilled coordinates
         initCoordinatesSets();
 
-        for (SudokuTile[] column : SudokuTile.getTileGrid()) {
-            for (SudokuTile tile : column) {
+        for (SudokuTile[] row : SudokuTile.getTileGrid()) {
+            for (SudokuTile tile : row) {
                 if (!tile.isEmpty()) {
                     tile.setValue(null);
                 }
@@ -58,8 +58,8 @@ public class PuzzleGenerator {
         unfilledCoordinates = new HashSet<>();
         filledCoordinates = new HashSet<>();
 
-        for (SudokuTile[] column : SudokuTile.getTileGrid()) {
-            for (SudokuTile tile : column) {
+        for (SudokuTile[] row : SudokuTile.getTileGrid()) {
+            for (SudokuTile tile : row) {
                 unfilledCoordinates.add(tile.getCoordinates());
             }
         }
@@ -119,12 +119,12 @@ public class PuzzleGenerator {
      * Assigns nine random tiles in the grid with the values 1-9.
      */
     private void assignFirstNine() {
-        SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
         int value = 1;
 
         while (value <= 9) {
             Coordinates randomUnfilledCoordinates = getRandomCoordinates(unfilledCoordinates);
-            SudokuTile randomTile = tileGrid[randomUnfilledCoordinates.x()][randomUnfilledCoordinates.y()];
+            SudokuTile randomTile = SudokuTile.getTileByCoordinates(randomUnfilledCoordinates.row(),
+                    randomUnfilledCoordinates.column());
 
             // Set the candidate to the current value (1-9)
             int candidate = value;
@@ -296,7 +296,7 @@ public class PuzzleGenerator {
             if (nextTile == null) {
                 // Get a random unfilled tile
                 Coordinates nextCoordinates = getRandomCoordinates(unfilledCoordinates);
-                nextTile = SudokuTile.getTileGrid()[nextCoordinates.x()][nextCoordinates.y()];
+                nextTile = SudokuTile.getTileByCoordinates(nextCoordinates.row(), nextCoordinates.column());
             }
 
             // Check if a backtracked tile has no more candidates
@@ -563,13 +563,15 @@ public class PuzzleGenerator {
      * @param candidateStates the HashMap of previous candidate states
      * @return true if successful, or false if the board state is invalid
      */
-    private boolean checkNakedSingles(Stack<SudokuTile> filledTileStack, HashMap<SudokuTile, String[][]> candidateStates) {
+    private boolean checkNakedSingles(Stack<SudokuTile> filledTileStack, HashMap<SudokuTile,
+            String[][]> candidateStates) {
         // Create a copy of unfilledCoordinates (to avoid concurrent modification)
         Set<Coordinates> unfilledCoordinatesCopy = new HashSet<>(unfilledCoordinates);
 
         // Check each unfilled tile for a naked single
         for (Coordinates unfilledCoordinates : unfilledCoordinatesCopy) {
-            SudokuTile unfilledTile = SudokuTile.getTileGrid()[unfilledCoordinates.x()][unfilledCoordinates.y()];
+            SudokuTile unfilledTile = SudokuTile.getTileByCoordinates(unfilledCoordinates.row(),
+                    unfilledCoordinates.column());
 
             // Fill the tile if it only has one candidate
             if (unfilledTile.getNumCandidates() == 1) {
@@ -624,12 +626,8 @@ public class PuzzleGenerator {
 
         boolean boxesResult = checkHiddenSingleGroup(boxesList, filledTileStack, candidateStates);
 
-        if (!boxesResult) {
-            return false;
-        }
-
-        // If no tiles are invalidated, return true
-        return true;
+        // If no tiles are invalidated, return true. Otherwise, return false
+        return boxesResult;
     }
 
     /**
@@ -889,17 +887,17 @@ public class PuzzleGenerator {
 
     /**
      * Returns a 2D-array of the board's current state of candidates with the first dimension corresponding to the
-     * x-coordinate and the second dimension corresponding to the y-coordinate
+     * row-coordinate and the second dimension corresponding to the column-coordinate
      * @return the 2D-array of candidates
      */
     private String[][] getBoardCandidates() {
         SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
-        String[][] boardCandidates = new String[tileGrid.length][tileGrid.length];
+        String[][] boardCandidates = new String[tileGrid.length][tileGrid[0].length];
 
         // Add each candidate String to its place in boardCandidates
         for (int row = 0; row < tileGrid.length; row++) {
-            for (int column = 0; column < tileGrid[0].length; column++) {
-                boardCandidates[column][row] = tileGrid[column][row].getCandidates().toString();
+            for (int column = 0; column < tileGrid[row].length; column++) {
+                boardCandidates[row][column] = tileGrid[row][column].getCandidates().toString();
             }
         }
 
@@ -915,8 +913,8 @@ public class PuzzleGenerator {
 
         // Set the candidates for each tile in the grid
         for (int row = 0; row < tileGrid.length; row++) {
-            for (int column = 0; column < tileGrid[0].length; column++) {
-                tileGrid[column][row].setCandidates(boardCandidates[column][row]);
+            for (int column = 0; column < tileGrid[row].length; column++) {
+                tileGrid[row][column].setCandidates(boardCandidates[row][column]);
             }
         }
     }
