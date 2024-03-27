@@ -189,6 +189,16 @@ public class SudokuTile {
     }
 
     /**
+     * Gets a reference to the SudokuTile at coordinates (x,y)
+     * @param x the x coordinate of the tile
+     * @param y the y coordinate of the tile
+     * @return the SudokuTile at the given coordinates
+     */
+    public static SudokuTile getTileByCoordinates(int x, int y) {
+        return tileGrid[x][y];
+    }
+
+    /**
      * Retrieves a collection of all the SudokuTiles in the same row as the current one
      * @return the list of tiles in the same row
      */
