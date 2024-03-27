@@ -1,12 +1,12 @@
 package Sudoku.GameLogic;
 
-import Sudoku.Testing.Tests;
 import Sudoku.UserInterface.Coordinates;
 import Sudoku.UserInterface.SudokuTile;
 import java.util.*;
 
 public class PuzzleGenerator {
     private Set<Coordinates> unfilledCoordinates;
+    private Set<Coordinates> filledCoordinates;
     private int solutionCount;
 
     /**
@@ -38,7 +38,7 @@ public class PuzzleGenerator {
      */
     private void setInitialCandidates() {
         // Add all tiles to the set of unfilled coordinates
-        initUnfilledCoordinates();
+        initCoordinatesSets();
 
         for (SudokuTile[] column : SudokuTile.getTileGrid()) {
             for (SudokuTile tile : column) {
@@ -52,10 +52,11 @@ public class PuzzleGenerator {
     }
 
     /**
-     * Adds the coordinates of all tiles to the set of unfilled coordinates
+     * Adds the coordinates of all tiles to the set of unfilled coordinates and initializes filledCoordinates
      */
-    private void initUnfilledCoordinates() {
+    private void initCoordinatesSets() {
         unfilledCoordinates = new HashSet<>();
+        filledCoordinates = new HashSet<>();
 
         for (SudokuTile[] column : SudokuTile.getTileGrid()) {
             for (SudokuTile tile : column) {
@@ -68,48 +69,50 @@ public class PuzzleGenerator {
      * Gets a random Coordinates object from the set of unfilled coordinates
      * @return the Coordinates of a random unfilled tile
      */
-    private Coordinates getRandomUnfilledCoordinates() {
+    private Coordinates getRandomCoordinates(Set<Coordinates> coordinatesSet) {
         Random generator = new Random();
         int randomCoordinateIndex;
         int currentIndex;
         Iterator<Coordinates> coordinatesIterator;
-        Coordinates randomUnfilledCoordinates = null;
+        Coordinates randomCoordinates = null;
 
-        // Generate a random index from the set of unfilled coordinates
-        randomCoordinateIndex = generator.nextInt(unfilledCoordinates.size());
+        // Generate a random index from the set of coordinates
+        randomCoordinateIndex = generator.nextInt(coordinatesSet.size());
 
-        coordinatesIterator = unfilledCoordinates.iterator();
+        coordinatesIterator = coordinatesSet.iterator();
         currentIndex = 0;
 
         // Iterate over the set of coordinates
         while (coordinatesIterator.hasNext()) {
-            randomUnfilledCoordinates = coordinatesIterator.next();
+            randomCoordinates = coordinatesIterator.next();
 
             // Return the coordinates if the index matches the randomCoordinateIndex
             if (currentIndex == randomCoordinateIndex) {
-                return randomUnfilledCoordinates;
+                return randomCoordinates;
             }
 
             currentIndex++;
         }
 
-        return randomUnfilledCoordinates;
+        return randomCoordinates;
     }
 
     /**
-     * Adds the given coordinates to the list of unfilled coordinates
+     * Adds the given coordinates to the list of unfilled coordinates and removes it from the list of filled coordinates
      * @param coordinates the coordinates of the unfilled tile
      */
     private void addUnfilledCoordinates(Coordinates coordinates) {
         unfilledCoordinates.add(coordinates);
+        filledCoordinates.remove(coordinates);
     }
 
     /**
-     * Removes the given coordinates from the list of unfilled coordinates
+     * Removes the given coordinates from the list of unfilled coordinates and adds it to the list of filled coordinates
      * @param coordinates the coordinates of the filled tile
      */
     private void removeUnfilledCoordinates(Coordinates coordinates) {
         unfilledCoordinates.remove(coordinates);
+        filledCoordinates.add(coordinates);
     }
 
     /**
@@ -120,7 +123,7 @@ public class PuzzleGenerator {
         int value = 1;
 
         while (value <= 9) {
-            Coordinates randomUnfilledCoordinates = getRandomUnfilledCoordinates();
+            Coordinates randomUnfilledCoordinates = getRandomCoordinates(unfilledCoordinates);
             SudokuTile randomTile = tileGrid[randomUnfilledCoordinates.x()][randomUnfilledCoordinates.y()];
 
             // Set the candidate to the current value (1-9)
@@ -292,7 +295,7 @@ public class PuzzleGenerator {
             // Check if the next tile has already been picked
             if (nextTile == null) {
                 // Get a random unfilled tile
-                Coordinates nextCoordinates = getRandomUnfilledCoordinates();
+                Coordinates nextCoordinates = getRandomCoordinates(unfilledCoordinates);
                 nextTile = SudokuTile.getTileGrid()[nextCoordinates.x()][nextCoordinates.y()];
             }
 
