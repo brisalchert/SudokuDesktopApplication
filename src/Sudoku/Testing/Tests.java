@@ -159,4 +159,22 @@ public class Tests {
             }
         }
     }
+
+    public static String gridToIntegerString() {
+        SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
+        StringBuilder gridString = new StringBuilder();
+
+        for (SudokuTile[] row : tileGrid) {
+            for (SudokuTile tile : row) {
+                if (tile.getValue() == null) {
+                    gridString.append(0);
+                }
+                else {
+                    gridString.append(tile.getValue());
+                }
+            }
+        }
+
+        return gridString.toString();
+    }
 }
