@@ -297,8 +297,10 @@ public class SudokuTile {
      */
     public static boolean collectionHasValue(List<SudokuTile> collection, int value) {
         for (SudokuTile tile : collection) {
-            if (tile.getValue() == value) {
-                return true;
+            if (!tile.isEmpty()) {
+                if (tile.getValue() == value) {
+                    return true;
+                }
             }
         }
 
