@@ -14,6 +14,10 @@ public class PuzzleGenerator {
      */
     public PuzzleGenerator() {
         initializeFullGrid();
+        removeClues(20, 4, 1, 500);
+
+        System.out.println(hasUniqueSolution(SudokuTile.tileGridToArrayList()));
+        System.out.println("Number of clues remaining: " + filledCoordinates.size());
     }
 
     /**
@@ -113,6 +117,15 @@ public class PuzzleGenerator {
     private void removeUnfilledCoordinates(Coordinates coordinates) {
         unfilledCoordinates.remove(coordinates);
         filledCoordinates.add(coordinates);
+    }
+
+    /**
+     * Returns a boolean corresponding to whether or not the specified coordinates are filled
+     * @param coordinates the coordinates to check
+     * @return true if the coordinates are filled, false otherwise
+     */
+    private boolean coordinatesAreFilled(Coordinates coordinates) {
+        return filledCoordinates.contains(coordinates);
     }
 
     /**
@@ -678,6 +691,19 @@ public class PuzzleGenerator {
     }
 
     /**
+     * Returns a boolean corresponding to whether or not the input ArrayList tileGrid has a unique solution
+     * @param tileGrid the 2D-ArrayList Sudoku board
+     * @return true if tileGrid has a unique solution, false otherwise
+     */
+    private boolean hasUniqueSolution(ArrayList<ArrayList<Integer>> tileGrid) {
+        solutionCount = 0;
+
+        updateSolutionCount(tileGrid, 2);
+
+        return solutionCount != 2;
+    }
+
+    /**
      * Gets the number of unique solutions for the current board
      * @return an integer number of unique solutions for the current board
      */
@@ -917,5 +943,164 @@ public class PuzzleGenerator {
                 tileGrid[row][column].setCandidates(boardCandidates[row][column]);
             }
         }
+    }
+
+    /**
+     * Removes clues from a full Sudoku board until the minimum number of clues is achieved, or until the maximum
+     * number of iterations is reached
+     * @param minimumClues the minimum number of clues to leave in the board
+     * @param removalCount the number of clues to remove in this iteration
+     * @param currentIteration the current iteration number in the removal process
+     * @param maxIterations the maximum number of iterations to allow
+     */
+    private void removeClues(int minimumClues, int removalCount, int currentIteration, int maxIterations) {
+        // If maxIterations is reached, return
+        if (currentIteration == maxIterations) {
+            return;
+        }
+
+        // If minimumClues is reached, return
+        if ((filledCoordinates.size()) <= minimumClues) {
+            return;
+        }
+
+        // Get the current board state as an ArrayList
+        ArrayList<ArrayList<Integer>> currentBoard = SudokuTile.tileGridToArrayList();
+
+        // Get a copy of filledCoordinates
+        Set<Coordinates> filledCoordinatesCopy = new HashSet<>(filledCoordinates);
+
+        if (removalCount == 4) {
+            // Remove 4 diagonally opposite clues from the ArrayList board
+            removeOppositeDiagonalClues(currentBoard, filledCoordinatesCopy, true);
+        }
+
+        if (removalCount == 2) {
+            // Remove 2 diagonally opposite clues from the ArrayList board
+            removeOppositeDiagonalClues(currentBoard, filledCoordinatesCopy, false);
+        }
+
+        if (removalCount == 1) {
+            // Remove a single clue randomly from the ArrayList board
+            Coordinates randomCoordinates = getRandomCoordinates(filledCoordinates);
+
+            currentBoard.get(randomCoordinates.row()).set(randomCoordinates.column(), 0);
+
+            long start = System.nanoTime();
+            boolean unique = hasUniqueSolution(currentBoard);
+            long end = System.nanoTime();
+
+            System.out.println("Time to check unique solution: " + ((end - start) / 1000000.0) + " ms");
+
+            if (unique) {
+                // Remove the clue and update unfilledCoordinates
+                emptyTileAndUpdate(SudokuTile.getTileByCoordinates(randomCoordinates.row(),
+                        randomCoordinates.column()));
+
+                addUnfilledCoordinates(randomCoordinates);
+            }
+        }
+
+        System.out.println("Number of clues remaining: " + filledCoordinates.size());
+        System.out.println("Current iteration: " + currentIteration);
+
+        // Iterate again, choosing how many clues to try to remove
+        if (unfilledCoordinates.size() < 20) {
+            removeClues(minimumClues, 4, (currentIteration + 1), maxIterations);
+        }
+        else if ((filledCoordinates.size() > 30) && (currentIteration < (maxIterations / 5))) {
+            removeClues(minimumClues, 2, (currentIteration + 1), maxIterations);
+        }
+        else {
+            removeClues(minimumClues, 1, (currentIteration + 1), maxIterations);
+        }
+    }
+
+    /**
+     * Removes a pair of opposite diagonal clues (or two pairs if removeQuad is true), making sure the resulting board
+     * retains a unique solution
+     * @param board the 2D-ArrayList of the values in the tileGrid
+     * @param eligibleCoordinates a set of Coordinates eligible for removal
+     * @param removeQuad boolean corresponding to whether or not two pairs of clues should be removed
+     * @return true if the removal is successful, false otherwise
+     */
+    private boolean removeOppositeDiagonalClues(ArrayList<ArrayList<Integer>> board,
+                                                              Set<Coordinates> eligibleCoordinates,
+                                                              boolean removeQuad) {
+        // If no more diagonal clues can be removed while maintaining a unique solution, return false
+        if (eligibleCoordinates.isEmpty()) {
+            return false;
+        }
+
+        // Get a pair of diagonal filled coordinates
+        Set<Coordinates> diagonalCoordinates = getDiagonalFilledCoordinates(eligibleCoordinates);
+
+        // Add the coordinates to the list to remove
+        Set<Coordinates> coordinatesToRemove = new HashSet<>(diagonalCoordinates);
+
+        // Remove the coordinates from eligibleCoordinates
+        eligibleCoordinates.removeAll(coordinatesToRemove);
+
+        // Get a second pair of random filled tiles if removeQuad is true
+        if (removeQuad) {
+            diagonalCoordinates = getDiagonalFilledCoordinates(eligibleCoordinates);
+
+            // Add the coordinates to the list to remove
+            coordinatesToRemove.addAll(diagonalCoordinates);
+
+            // Remove the coordinates from eligibleCoordinates
+            eligibleCoordinates.removeAll(coordinatesToRemove);
+        }
+
+        // Remove the clues from the board
+        for (Coordinates coordinates : coordinatesToRemove) {
+            board.get(coordinates.row()).set(coordinates.column(), 0);
+        }
+
+        // If the board still has a unique solution, remove the clues from the tileGrid. Otherwise, try again with
+        // different coordinates
+        if (hasUniqueSolution(board)) {
+            for (Coordinates coordinates : coordinatesToRemove) {
+                emptyTileAndUpdate(SudokuTile.getTileByCoordinates(coordinates.row(), coordinates.column()));
+
+                // Add the tile's coordinates back to unfilledCoordinates
+                addUnfilledCoordinates(coordinates);
+            }
+
+            return true;
+        }
+        else {
+            // Try again, refreshing the current board state
+            return removeOppositeDiagonalClues(SudokuTile.tileGridToArrayList(), eligibleCoordinates, removeQuad);
+        }
+    }
+
+    /**
+     * Returns a Set of two Coordinates objects that correspond to diagonal filled coordinates from the Set of
+     * eligible coordinates
+     * @param eligibleCoordinates the set of coordinates to draw the pair from
+     * @return a Set of two diagonal filled Coordinates
+     */
+    private Set<Coordinates> getDiagonalFilledCoordinates(Set<Coordinates> eligibleCoordinates) {
+        Set<Coordinates> diagonalPair = new HashSet<>();
+        Set<Coordinates> eligibleCoordinatesCopy = new HashSet<>(eligibleCoordinates);
+        Coordinates randomCoordinates;
+        Coordinates inverseCoordinates;
+        int inverseFactor = SudokuTile.getTileGrid().length - 1;
+
+        // Get a random set of filled coordinates
+        randomCoordinates = getRandomCoordinates(eligibleCoordinatesCopy);
+
+        // Invert the random tile's coordinates
+        int inverseRow = (inverseFactor - randomCoordinates.row());
+        int inverseColumn = (inverseFactor - randomCoordinates.column());
+
+        inverseCoordinates = new Coordinates(inverseRow, inverseColumn);
+
+        // Add the coordinates to a set and return
+        diagonalPair.add(randomCoordinates);
+        diagonalPair.add(inverseCoordinates);
+
+        return diagonalPair;
     }
 }
