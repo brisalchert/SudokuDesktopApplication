@@ -14,7 +14,10 @@ public class PuzzleGenerator {
      */
     public PuzzleGenerator() {
         initializeFullGrid();
-        removeClues(20, 4, 1, 500);
+
+        int lastIteration = removeClues(20, 4, 1, 200, 0);
+
+        System.out.println("Last meaningful iteration: " + lastIteration);
 
         System.out.println(hasUniqueSolution(SudokuTile.tileGridToArrayList()));
         System.out.println("Number of clues remaining: " + filledCoordinates.size());
@@ -952,16 +955,22 @@ public class PuzzleGenerator {
      * @param removalCount the number of clues to remove in this iteration
      * @param currentIteration the current iteration number in the removal process
      * @param maxIterations the maximum number of iterations to allow
+     * @param lastIterationModified the last iteration that clues were removed on
+     * @return the last iteration that board was modified
      */
-    private void removeClues(int minimumClues, int removalCount, int currentIteration, int maxIterations) {
+    private int removeClues(int minimumClues, int removalCount, int currentIteration, int maxIterations,
+                             int lastIterationModified) {
+        // Set starting clues to the current number of clues remaining
+        int startingClues = filledCoordinates.size();
+
         // If maxIterations is reached, return
         if (currentIteration == maxIterations) {
-            return;
+            return lastIterationModified;
         }
 
         // If minimumClues is reached, return
         if ((filledCoordinates.size()) <= minimumClues) {
-            return;
+            return lastIterationModified;
         }
 
         // Get the current board state as an ArrayList
@@ -986,13 +995,7 @@ public class PuzzleGenerator {
 
             currentBoard.get(randomCoordinates.row()).set(randomCoordinates.column(), 0);
 
-            long start = System.nanoTime();
-            boolean unique = hasUniqueSolution(currentBoard);
-            long end = System.nanoTime();
-
-            System.out.println("Time to check unique solution: " + ((end - start) / 1000000.0) + " ms");
-
-            if (unique) {
+            if (hasUniqueSolution(currentBoard)) {
                 // Remove the clue and update unfilledCoordinates
                 emptyTileAndUpdate(SudokuTile.getTileByCoordinates(randomCoordinates.row(),
                         randomCoordinates.column()));
@@ -1001,18 +1004,20 @@ public class PuzzleGenerator {
             }
         }
 
-        System.out.println("Number of clues remaining: " + filledCoordinates.size());
-        System.out.println("Current iteration: " + currentIteration);
+        // If clues were removed this iteration, set lastIterationModified to currentIteration
+        if (startingClues > filledCoordinates.size()) {
+            lastIterationModified = currentIteration;
+        }
 
         // Iterate again, choosing how many clues to try to remove
         if (unfilledCoordinates.size() < 20) {
-            removeClues(minimumClues, 4, (currentIteration + 1), maxIterations);
+            return removeClues(minimumClues, 4, (currentIteration + 1), maxIterations, lastIterationModified);
         }
         else if ((filledCoordinates.size() > 30) && (currentIteration < (maxIterations / 5))) {
-            removeClues(minimumClues, 2, (currentIteration + 1), maxIterations);
+            return removeClues(minimumClues, 2, (currentIteration + 1), maxIterations, lastIterationModified);
         }
         else {
-            removeClues(minimumClues, 1, (currentIteration + 1), maxIterations);
+            return removeClues(minimumClues, 1, (currentIteration + 1), maxIterations, lastIterationModified);
         }
     }
 
