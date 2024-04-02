@@ -10,7 +10,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         try {
             UserInterface userInterface = new UserInterface(primaryStage);
-            PuzzleGenerator puzzleGenerator = new PuzzleGenerator();
+            PuzzleGenerator puzzleGenerator = new PuzzleGenerator(25);
         }
         catch (Exception error) {
             error.printStackTrace();

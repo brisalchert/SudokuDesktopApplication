@@ -77,7 +77,7 @@ public class Tests {
      * Generates a certain number of Sudoku grids and reports back the minimum, maximum, and average runtimes
      * @param numGrids the number of Sudoku grids to generate
      */
-    public static void generateGrids(int numGrids) {
+    public static void generateGrids(int numGrids, int minimumClues) {
         ArrayList<Long> generationTimes = new ArrayList<>(numGrids);
         DecimalFormat twoPlaces = new DecimalFormat("0.00");
         long minimum;
@@ -96,7 +96,7 @@ public class Tests {
             startTime = System.nanoTime();
 
             // Generate a grid
-            PuzzleGenerator puzzle = new PuzzleGenerator();
+            PuzzleGenerator puzzle = new PuzzleGenerator(minimumClues);
 
             // Record end time
             endTime = System.nanoTime();

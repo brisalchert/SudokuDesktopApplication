@@ -11,16 +11,12 @@ public class PuzzleGenerator {
 
     /**
      * Constructor: Creates a PuzzleGenerator object and calls puzzle generation methods
+     * @param minimumClues the minimum number of clues to leave in the board
      */
-    public PuzzleGenerator() {
+    public PuzzleGenerator(int minimumClues) {
         initializeFullGrid();
 
-        int lastIteration = removeClues(20, 4, 1, 200, 0);
-
-        System.out.println("Last meaningful iteration: " + lastIteration);
-
-        System.out.println(hasUniqueSolution(SudokuTile.tileGridToArrayList()));
-        System.out.println("Number of clues remaining: " + filledCoordinates.size());
+        removeClues(minimumClues, 4, 1, 50, 0);
     }
 
     /**
