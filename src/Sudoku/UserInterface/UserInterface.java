@@ -222,7 +222,7 @@ public class UserInterface {
                     }
                     else {
                         if (keyEvent.getCode() == KeyCode.BACK_SPACE) {
-                            SudokuTile.getLastClickedTile().setValue(0);
+                            SudokuTile.getLastClickedTile().setValue(null);
                         }
                     }
                 }
