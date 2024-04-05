@@ -20,10 +20,26 @@ public class PuzzleGenerator {
         removeClues(minimumClues, 4, 1, 50, 0);
     }
 
+    public SudokuTile[][] getTileGrid() {
+        return this.tileGrid;
+    }
+
+    /**
+     * Initializes the SudokuTile objects in the tileGrid
+     */
+    private void initializeTileGrid() {
+        for (int row = 0; row < tileGrid.length; row++) {
+            for (int col = 0; col < tileGrid[row].length; col++) {
+                tileGrid[row][col] = new SudokuTile(row, col);
+            }
+        }
+    }
+
     /**
      * Initializes a valid, randomly-generated full Sudoku grid
      */
     private void initializeFullGrid() {
+        initializeTileGrid();
         setInitialCandidates();
         assignFirstNine();
 

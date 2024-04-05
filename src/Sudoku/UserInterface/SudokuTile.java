@@ -30,6 +30,8 @@ public class SudokuTile {
     private Color tileHoveredColor = Color.rgb(0, 0, 0, 0.25);
     private Color tileClickedColor = Color.rgb(0, 0, 0, 0.4);
 
+    // TODO: Separate MVC elements of SudokuTile class
+
     public SudokuTile(int row, int column) {
         coordinates = new Coordinates(row, column);
         tile = new Rectangle();
@@ -41,8 +43,8 @@ public class SudokuTile {
         // Add the tile to the global tileGrid
         tileGrid[getRowIndex()][getColumnIndex()] = this;
 
-        tile.setWidth(UserInterface.getTileSize());
-        tile.setHeight(UserInterface.getTileSize());
+        tile.setWidth(PuzzleView.getTileSize());
+        tile.setHeight(PuzzleView.getTileSize());
         tile.setFill(tileNeutralColor);
 
         tile.setOnMouseEntered(mouseEvent -> {

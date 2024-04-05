@@ -1,7 +1,7 @@
 package Sudoku;
 
-import Sudoku.GameLogic.PuzzleGenerator;
-import Sudoku.UserInterface.UserInterface;
+import Sudoku.UserInterface.PuzzleController;
+import Sudoku.UserInterface.SudokuModel;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -9,8 +9,12 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         try {
-            UserInterface userInterface = new UserInterface(primaryStage);
-            PuzzleGenerator puzzleGenerator = new PuzzleGenerator(25);
+            SudokuModel sudokuModel = new SudokuModel();
+            PuzzleController puzzleController = new PuzzleController(sudokuModel);
+
+            primaryStage.setTitle("Sudoku");
+            primaryStage.setScene(puzzleController.getPuzzleScene());
+            primaryStage.show();
         }
         catch (Exception error) {
             error.printStackTrace();

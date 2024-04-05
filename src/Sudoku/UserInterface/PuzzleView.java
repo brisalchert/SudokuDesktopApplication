@@ -4,7 +4,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -12,11 +11,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
-public class UserInterface {
-    private final Stage stage;
-    private final BorderPane root;
+public class PuzzleView {
+    private final BorderPane puzzleRoot;
+    private final Scene puzzleScene;
     private final static int TILE_WIDTH_AND_HEIGHT = 64;
     private final int TILE_SPACING = 2;
     private final int BOX_SPACING = 4;
@@ -27,37 +25,31 @@ public class UserInterface {
     private final Color TILE_BACKGROUND_COLOR = Color.rgb(245, 222, 179, 0.7);
     private final Color TILE_BORDER_COLOR = Color.rgb(30, 30, 30, 0.7);
 
-    public UserInterface(Stage stage) {
-        this.stage = stage;
-        this.root = new BorderPane();
-        initializeUserInterface();
+    public PuzzleView(SudokuModel sudokuModel, PuzzleController puzzleController) {
+        this.puzzleRoot = new BorderPane();
+        this.puzzleScene = new Scene(puzzleRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+        initializePuzzleInterface();
+    }
+
+    public Scene getPuzzleScene() {
+        return puzzleScene;
     }
 
     public static int getTileSize() {
         return TILE_WIDTH_AND_HEIGHT;
     }
 
-    private void initializeUserInterface() {
-        drawBackground(root);
-        drawTitle(root);
-        drawSudokuBoard(root);
-
-        stage.show();
+    private void initializePuzzleInterface() {
+        drawBackground(puzzleRoot);
+        drawTitle(puzzleRoot);
+        drawSudokuBoard(puzzleRoot);
     }
 
-    private void drawBackground(BorderPane root) {
-        Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-        scene.setFill(WINDOW_BACKGROUND_COLOR);
-
-        // Add event filters to the scene for key events and mouse clicks
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, createKeyEventHandler());
-        scene.addEventFilter(MouseEvent.MOUSE_CLICKED, createMouseEventHandler());
-
-        stage.setTitle("Sudoku");
-        stage.setScene(scene);
+    private void drawBackground(BorderPane puzzleRoot) {
+        puzzleScene.setFill(WINDOW_BACKGROUND_COLOR);
     }
 
-    private void drawTitle(BorderPane root) {
+    private void drawTitle(BorderPane puzzleRoot) {
         HBox titleBox = new HBox();
         Text title = new Text("Sudoku");
         Font titleFont = new Font("Century", 50);
@@ -67,10 +59,10 @@ public class UserInterface {
         titleBox.setPadding(new Insets(20));
         titleBox.setPrefWidth(WINDOW_WIDTH);
 
-        root.setTop(titleBox);
+        puzzleRoot.setTop(titleBox);
     }
 
-    private void drawSudokuBoard(BorderPane root) {
+    private void drawSudokuBoard(BorderPane puzzleRoot) {
         StackPane board = new StackPane();
         GridPane boxGrid = new GridPane();
         int boxGridWidthAndHeight = 3;
@@ -94,7 +86,7 @@ public class UserInterface {
         // Add the boxGrid to the board
         board.getChildren().add(boxGrid);
 
-        root.setCenter(board);
+        puzzleRoot.setCenter(board);
     }
 
     // Indices will be used for alternating tile colors
@@ -118,7 +110,7 @@ public class UserInterface {
                 box.add(tileBackground, boxRow, boxColumn);
 
                 // Assign tile coordinates relative to the entire grid
-                SudokuTile tile = new SudokuTile(gridRow, gridColumn);
+                SudokuTile tile = SudokuTile.getTileByCoordinates(gridRow, gridColumn);
                 box.add(tile.getTileNode(), boxRow, boxColumn);
 
                 gridColumn++;
@@ -207,45 +199,11 @@ public class UserInterface {
         }
     }
 
-
-    public EventHandler<KeyEvent> createKeyEventHandler() {
-        EventHandler<KeyEvent> eventHandler = keyEvent -> {
-            // Check if there is a tile selected
-            if (SudokuTile.getLastClickedTile() != null) {
-                if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED) {
-                    // Check that the input is valid
-                    if (keyEvent.getText().matches("[1-9]")) {
-                        int value = Integer.parseInt(keyEvent.getText());
-
-                        // Assign the input to the current tile
-                        SudokuTile.getLastClickedTile().setValue(value);
-                    }
-                    else {
-                        if (keyEvent.getCode() == KeyCode.BACK_SPACE) {
-                            SudokuTile.getLastClickedTile().setValue(null);
-                        }
-                    }
-                }
-            }
-
-            keyEvent.consume();
-        };
-
-        return eventHandler;
+    public void setKeyEventHandler(EventHandler<KeyEvent> keyEventHandler) {
+        puzzleScene.addEventFilter(KeyEvent.KEY_PRESSED, keyEventHandler);
     }
 
-    public EventHandler<MouseEvent> createMouseEventHandler() {
-        EventHandler<MouseEvent> eventHandler = mouseEvent -> {
-            Object target = mouseEvent.getTarget();
-
-            // Only unselect the last clicked tile if the click is not on a tile
-            if (!(target instanceof Rectangle)) {
-                if (SudokuTile.getLastClickedTile() != null) {
-                    SudokuTile.getLastClickedTile().unselectTile();
-                }
-            }
-        };
-
-        return eventHandler;
+    public void setMouseEventHandler(EventHandler<MouseEvent> mouseEventHandler) {
+        puzzleScene.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEventHandler);
     }
 }
