@@ -8,6 +8,7 @@ public class PuzzleGenerator {
     private Set<Coordinates> unfilledCoordinates;
     private Set<Coordinates> filledCoordinates;
     private int solutionCount;
+    private final SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
 
     /**
      * Constructor: Creates a PuzzleGenerator object and calls puzzle generation methods
@@ -43,7 +44,7 @@ public class PuzzleGenerator {
         // Add all tiles to the set of unfilled coordinates
         initCoordinatesSets();
 
-        for (SudokuTile[] row : SudokuTile.getTileGrid()) {
+        for (SudokuTile[] row : tileGrid) {
             for (SudokuTile tile : row) {
                 if (!tile.isEmpty()) {
                     tile.setValue(null);
@@ -61,7 +62,7 @@ public class PuzzleGenerator {
         unfilledCoordinates = new HashSet<>();
         filledCoordinates = new HashSet<>();
 
-        for (SudokuTile[] row : SudokuTile.getTileGrid()) {
+        for (SudokuTile[] row : tileGrid) {
             for (SudokuTile tile : row) {
                 unfilledCoordinates.add(tile.getCoordinates());
             }
@@ -916,7 +917,6 @@ public class PuzzleGenerator {
      * @return the 2D-array of candidates
      */
     private String[][] getBoardCandidates() {
-        SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
         String[][] boardCandidates = new String[tileGrid.length][tileGrid[0].length];
 
         // Add each candidate String to its place in boardCandidates
@@ -934,8 +934,6 @@ public class PuzzleGenerator {
      * @param boardCandidates the 2D-array of candidates
      */
     private void setBoardCandidates(String[][] boardCandidates) {
-        SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
-
         // Set the candidates for each tile in the grid
         for (int row = 0; row < tileGrid.length; row++) {
             for (int column = 0; column < tileGrid[row].length; column++) {
@@ -1087,7 +1085,7 @@ public class PuzzleGenerator {
         Set<Coordinates> eligibleCoordinatesCopy = new HashSet<>(eligibleCoordinates);
         Coordinates randomCoordinates;
         Coordinates inverseCoordinates;
-        int inverseFactor = SudokuTile.getTileGrid().length - 1;
+        int inverseFactor = tileGrid.length - 1;
 
         // Get a random set of filled coordinates
         randomCoordinates = getRandomCoordinates(eligibleCoordinatesCopy);
