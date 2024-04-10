@@ -390,11 +390,7 @@ public class SudokuTile {
      */
     public static SudokuTile getLastClickedTile() {
         // Check that the last clicked tile is still selected
-        if (lastClickedTile != null) {
-            return lastClickedTile;
-        }
-
-        return null;
+        return lastClickedTile;
     }
 
     /**
