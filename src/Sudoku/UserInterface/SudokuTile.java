@@ -1,5 +1,6 @@
 package Sudoku.UserInterface;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -18,7 +19,7 @@ public class SudokuTile {
     private static SudokuTile lastClickedTile;
     // First coordinate is row, second coordinate is column
     private final Coordinates coordinates;
-    private Integer value;
+    private SimpleObjectProperty<Integer> value = new SimpleObjectProperty<>();
     private StringBuilder candidates = new StringBuilder();
     private boolean clicked = false;
     private StackPane sudokuTile;
@@ -357,7 +358,7 @@ public class SudokuTile {
     }
 
     public Integer getValue() {
-        return value;
+        return value.get();
     }
 
     /**
@@ -367,7 +368,7 @@ public class SudokuTile {
     public void setValue(Integer value) {
         // Do not accept a value not in the range 1-9 unless it is null
         if (value == null || (value >= 1 && value <= 9)) {
-            this.value = value;
+            this.value.set(value);
 
             // Do not display value of null
             if (value == null) {
