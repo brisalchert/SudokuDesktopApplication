@@ -19,7 +19,7 @@ public class SudokuTile {
     private static SudokuTile lastClickedTile;
     // First coordinate is row, second coordinate is column
     private final Coordinates coordinates;
-    private SimpleObjectProperty<Integer> value = new SimpleObjectProperty<>();
+    private SimpleObjectProperty<Integer> valueProperty = new SimpleObjectProperty<>();
     private StringBuilder candidates = new StringBuilder();
     private boolean clicked = false;
     private StackPane sudokuTile;
@@ -358,7 +358,7 @@ public class SudokuTile {
     }
 
     public Integer getValue() {
-        return value.get();
+        return valueProperty.get();
     }
 
     /**
@@ -368,7 +368,7 @@ public class SudokuTile {
     public void setValue(Integer value) {
         // Do not accept a value not in the range 1-9 unless it is null
         if (value == null || (value >= 1 && value <= 9)) {
-            this.value.set(value);
+            this.valueProperty.set(value);
 
             // Do not display value of null
             if (value == null) {
@@ -378,6 +378,10 @@ public class SudokuTile {
                 tileText.setText(String.valueOf(value));
             }
         }
+    }
+
+    public SimpleObjectProperty<Integer> ValueProperty() {
+        return valueProperty;
     }
 
     /**
