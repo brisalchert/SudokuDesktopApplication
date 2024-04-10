@@ -398,6 +398,14 @@ public class SudokuTile {
     }
 
     /**
+     * Sets lastClickedTile to the specified tile
+     * @param tile the tile to set lastClickedTile to
+     */
+    public static void setLastClickedTile(SudokuTile tile) {
+        lastClickedTile = tile;
+    }
+
+    /**
      * Unselects the last clicked tile
      */
     public void unselectTile() {
