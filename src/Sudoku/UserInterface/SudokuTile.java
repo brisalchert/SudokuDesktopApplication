@@ -1,5 +1,6 @@
 package Sudoku.UserInterface;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
@@ -21,7 +22,8 @@ public class SudokuTile {
     private final Coordinates coordinates;
     private SimpleObjectProperty<Integer> valueProperty = new SimpleObjectProperty<>();
     private StringBuilder candidates = new StringBuilder();
-    private boolean clicked = false;
+    private SimpleBooleanProperty clickedProperty = new SimpleBooleanProperty(false);
+    private SimpleBooleanProperty relevantProperty = new SimpleBooleanProperty(false);
     private StackPane sudokuTile;
     private Rectangle tile;
     private Text tileText;
@@ -49,14 +51,14 @@ public class SudokuTile {
         tile.setFill(tileNeutralColor);
 
         tile.setOnMouseEntered(mouseEvent -> {
-            if (!clicked) {
+            if (!clickedProperty.get()) {
                 this.lastColor = (Color) tile.getFill();
                 tile.setFill(tileHoveredColor);
             }
         });
 
         tile.setOnMouseExited(mouseEvent -> {
-            if (!clicked) {
+            if (!clickedProperty.get()) {
                 tile.setFill(lastColor);
             }
         });
@@ -75,8 +77,8 @@ public class SudokuTile {
                 // Update clicked status of current clicked tile
                 lastClickedTile = this;
                 this.setTileColor(tileClickedColor);
-                this.clicked = true;
-                this.showRelevantTiles();
+                clickedProperty.set(true);
+                this.setRelevantTiles();
             }
         });
     }
@@ -380,7 +382,11 @@ public class SudokuTile {
         }
     }
 
-    public SimpleObjectProperty<Integer> ValueProperty() {
+    /**
+     * Gets a reference to the tile's valueProperty
+     * @return the tile's valueProperty itself
+     */
+    public SimpleObjectProperty<Integer> valueProperty() {
         return valueProperty;
     }
 
@@ -406,26 +412,74 @@ public class SudokuTile {
      */
     public void unselectTile() {
         lastClickedTile.setTileColor(tileNeutralColor);
-        lastClickedTile.clicked = false;
-        lastClickedTile.hideRelevantTiles();
+        lastClickedTile.clickedProperty.set(false);
+        lastClickedTile.unsetRelevantTiles();
         lastClickedTile = null;
     }
 
-    private void showRelevantTiles() {
+    /**
+     * Gets the value of the tile's clickedProperty
+     * @return the value of the tile's clickedProperty
+     */
+    public boolean getClicked() {
+        return clickedProperty.get();
+    }
+
+    /**
+     * Sets the value of the tile's clickedProperty
+     * @param clicked the new value for the tile's clickedProperty
+     */
+    public void setClicked(boolean clicked) {
+        clickedProperty.set(clicked);
+    }
+
+    /**
+     * Gets a reference to the tile's clickedProperty
+     * @return the tile's clickedProperty itself
+     */
+    public SimpleBooleanProperty clickedProperty() {
+        return clickedProperty;
+    }
+
+    /**
+     * Gets the value of the tile's relevantProperty
+     * @return the value of the tile's relevantProperty
+     */
+    public boolean getRelevant() {
+        return relevantProperty.get();
+    }
+
+    /**
+     * Sets the value of the tile's relevantProperty
+     * @param relevant the new value for the tile's relevantProperty
+     */
+    public void setRelevant(boolean relevant) {
+        relevantProperty.set(relevant);
+    }
+
+    /**
+     * Gets a reference to the tile's relevantProperty
+     * @return the tile's relevantProperty itself
+     */
+    public SimpleBooleanProperty relevantProperty() {
+        return relevantProperty;
+    }
+
+    private void setRelevantTiles() {
         for (SudokuTile[] row : tileGrid) {
             for (SudokuTile tile : row) {
                 if (tile != this && (tile.getRowIndex() == this.getRowIndex() || tile.getColumnIndex() == this.getColumnIndex())) {
-                    tile.setTileColor(tileRelevantColor);
+                    tile.setRelevant(true);
                 }
             }
         }
     }
 
-    private void hideRelevantTiles() {
+    private void unsetRelevantTiles() {
         for (SudokuTile[] row : tileGrid) {
             for (SudokuTile tile : row) {
                 if (tile != this && (tile.getRowIndex() == this.getRowIndex() || tile.getColumnIndex() == this.getColumnIndex())) {
-                    tile.setTileColor(tileNeutralColor);
+                    tile.setRelevant(false);
                 }
             }
         }
