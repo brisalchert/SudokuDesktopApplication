@@ -1,6 +1,7 @@
 package Sudoku.UserInterface;
 
 import Sudoku.GameLogic.PuzzleGenerator;
+import Sudoku.GameLogic.SudokuTile;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;

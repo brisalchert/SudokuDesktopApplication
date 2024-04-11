@@ -1,7 +1,7 @@
 package Sudoku.Testing;
 
 import Sudoku.GameLogic.PuzzleGenerator;
-import Sudoku.UserInterface.SudokuTile;
+import Sudoku.GameLogic.SudokuTile;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

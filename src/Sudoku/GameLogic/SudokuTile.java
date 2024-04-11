@@ -1,5 +1,6 @@
-package Sudoku.UserInterface;
+package Sudoku.GameLogic;
 
+import Sudoku.UserInterface.Coordinates;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;

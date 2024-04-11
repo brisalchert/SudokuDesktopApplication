@@ -1,7 +1,7 @@
 package Sudoku.GameLogic;
 
 import Sudoku.UserInterface.Coordinates;
-import Sudoku.UserInterface.SudokuTile;
+
 import java.util.*;
 
 public class PuzzleGenerator {
