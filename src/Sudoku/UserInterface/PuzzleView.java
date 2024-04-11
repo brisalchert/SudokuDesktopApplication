@@ -3,6 +3,8 @@ package Sudoku.UserInterface;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -11,8 +13,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.converter.NumberStringConverter;
 
 public class PuzzleView {
+    private final SudokuModel sudokuModel;
+    private final PuzzleController puzzleController;
     private final BorderPane puzzleRoot;
     private final Scene puzzleScene;
     private final static int TILE_WIDTH_AND_HEIGHT = 64;
@@ -26,6 +31,8 @@ public class PuzzleView {
     private final Color TILE_BORDER_COLOR = Color.rgb(30, 30, 30, 0.7);
 
     public PuzzleView(SudokuModel sudokuModel, PuzzleController puzzleController) {
+        this.sudokuModel = sudokuModel;
+        this.puzzleController = puzzleController;
         this.puzzleRoot = new BorderPane();
         this.puzzleScene = new Scene(puzzleRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
         initializePuzzleInterface();
@@ -105,13 +112,9 @@ public class PuzzleView {
             gridColumn = (3*columnIndex);
 
             for (int boxColumn = 0; boxColumn < boxWidthAndHeight; boxColumn++) {
-                Rectangle tileBackground = new Rectangle(64, 64);
-                tileBackground.setFill(TILE_BACKGROUND_COLOR);
-                box.add(tileBackground, boxRow, boxColumn);
-
-                // Assign tile coordinates relative to the entire grid
-                SudokuTile tile = SudokuTile.getTileByCoordinates(gridRow, gridColumn);
-                box.add(tile.getTileNode(), boxRow, boxColumn);
+                // Create a coordinates object for the grid coordinates of the tile
+                Coordinates tileCoordinates = new Coordinates(gridRow, gridColumn);
+                drawSudokuTile(box, tileCoordinates, boxRow, boxColumn);
 
                 gridColumn++;
             }
@@ -119,8 +122,52 @@ public class PuzzleView {
             gridRow++;
         }
 
-        // Add the box to the boxGrid
-        boxGrid.add(box, rowIndex, columnIndex);
+        // Add the box to the boxGrid (GridPane.add() uses column first)
+        boxGrid.add(box, columnIndex, rowIndex);
+    }
+
+    private void drawSudokuTile(GridPane box, Coordinates coordinates, int boxRow, int boxColumn) {
+        StackPane tilePane;
+
+        // Draw the tile background
+        Rectangle tileBackground = new Rectangle(TILE_WIDTH_AND_HEIGHT, TILE_WIDTH_AND_HEIGHT);
+        tileBackground.setFill(TILE_BACKGROUND_COLOR);
+        box.add(tileBackground, boxRow, boxColumn);
+
+        // Draw the tileTint Rectangle (used for shading the tile)
+        Rectangle tileTint = new Rectangle(TILE_WIDTH_AND_HEIGHT, TILE_WIDTH_AND_HEIGHT);
+
+        // Set userData for the tileTint so that it can be looked up by its coordinates
+        tileTint.setUserData(coordinates);
+
+        // Add a listener that updates the tile's hovered property on hover
+        tileTint.hoverProperty().addListener((observable, oldValue, newValue) ->
+                puzzleController.updateTileHovered(coordinates, newValue));
+
+        // Add a listener that updates the tileTint on hover
+        tileTint.hoverProperty().addListener((observable, oldValue, newValue) ->
+                puzzleController.updateTileFill(coordinates));
+
+        // Bind the tile's fillProperty to the color from the model
+        tileTint.fillProperty().bind(sudokuModel.tileColorProperty(coordinates));
+
+        // Add tile text
+        Text tileText = new Text();
+        Font tileFont = new Font("Century", 30);
+        tileText.setFont(tileFont);
+
+        // Add a listener that sets tile text to visible only if the value is 1-9
+        tileText.textProperty().addListener((observable, oldText, newText) ->
+                puzzleController.updateTileText(tileText, newText));
+
+        // Bind the tile's textProperty to the actual value from the model
+        tileText.textProperty().bindBidirectional(sudokuModel.tileValueProperty(coordinates), new NumberStringConverter());
+
+        // Add background, text, and the tileTint to the tilePane
+        tilePane = new StackPane(tileBackground, tileText, tileTint);
+
+        // Add the tilePane to the box (GridPane.add() uses column first
+        box.add(tilePane, boxColumn, boxRow);
     }
 
     private void drawGridLines(StackPane board) {
@@ -197,6 +244,58 @@ public class PuzzleView {
                 gridLine.setViewOrder(10);
             }
         }
+    }
+
+    /**
+     * Gets the Coordinates of a tileTint Rectangle relative to the tileGrid
+     * @param tileTint the tileTint in the GridPane tileGrid
+     * @return a Coordinates object with the coordinates of the tileTint, or null if the rectangle is not part of the
+     * tileGrid
+     */
+    public Coordinates getCoordinatesByTileTint(Rectangle tileTint) {
+        // Ensure that the tileTint is part of the tileGrid
+        if (tileTint.getUserData() != null) {
+            return (Coordinates) tileTint.getUserData();
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets the Rectangle tileTint for a tile in the view from a given set of Coordinates
+     * @param coordinates the coordinates of the tileTint
+     * @return the Rectangle tileTint
+     */
+    public Rectangle getTileTintByCoordinates(Coordinates coordinates) {
+        // Get a reference to the tileTint at the given coordinates
+        return (Rectangle) DFSNodeByUserData(coordinates, puzzleRoot);
+    }
+
+    /**
+     * Support function for getTileTintByCoordinates that performs a DFS on the scene graph, searching for the node
+     * whose userData matches the coordinates of the tileTint
+     * @param userData the userdata stored in the target node
+     * @param node the current node being searched
+     * @return the target node, or null if it could not be found
+     */
+    private Node DFSNodeByUserData(Object userData, Node node) {
+        if (node.getUserData() != null) {
+            if (node.getUserData().equals(userData)) {
+                return node;
+            }
+        }
+
+        if (node instanceof Parent) {
+            for (Node child : ((Parent) node).getChildrenUnmodifiable()) {
+                Node result = DFSNodeByUserData(userData, child);
+
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+
+        return null;
     }
 
     public void setKeyEventHandler(EventHandler<KeyEvent> keyEventHandler) {

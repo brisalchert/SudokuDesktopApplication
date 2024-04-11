@@ -136,7 +136,7 @@ public class Tests {
         // Remove all values
         for (SudokuTile[] column : tileGrid) {
             for (SudokuTile tile : column) {
-                tile.setValue(null);
+                tile.setValue(0);
             }
         }
     }
@@ -154,7 +154,7 @@ public class Tests {
                     tileGrid[columnIndex][rowIndex].setValue(boardValues[rowIndex][columnIndex]);
                 }
                 else {
-                    tileGrid[columnIndex][rowIndex].setValue(null);
+                    tileGrid[columnIndex][rowIndex].setValue(0);
                 }
             }
         }

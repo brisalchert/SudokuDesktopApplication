@@ -1,13 +1,10 @@
 package Sudoku.UserInterface;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.Node;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,79 +17,26 @@ public class SudokuTile {
     private static SudokuTile lastClickedTile;
     // First coordinate is row, second coordinate is column
     private final Coordinates coordinates;
-    private SimpleObjectProperty<Integer> valueProperty = new SimpleObjectProperty<>();
+    private SimpleIntegerProperty valueProperty = new SimpleIntegerProperty();
     private StringBuilder candidates = new StringBuilder();
     private SimpleBooleanProperty clickedProperty = new SimpleBooleanProperty(false);
     private SimpleBooleanProperty relevantProperty = new SimpleBooleanProperty(false);
-    private StackPane sudokuTile;
-    private Rectangle tile;
-    private Text tileText;
-    private Color lastColor;
-    private Color tileNeutralColor = Color.rgb(0, 0, 0, 0.0);
-    private Color tileRelevantColor = Color.rgb(0, 0, 0, 0.1);
-    private Color tileHoveredColor = Color.rgb(0, 0, 0, 0.25);
-    private Color tileClickedColor = Color.rgb(0, 0, 0, 0.4);
-
-    // TODO: Separate MVC elements of SudokuTile class
+    private SimpleBooleanProperty hoveredProperty = new SimpleBooleanProperty(false);
+    private final Color TILE_NEUTRAL_COLOR = Color.rgb(0, 0, 0, 0.0);
+    private final Color TILE_RELEVANT_COLOR = Color.rgb(0, 0, 0, 0.1);
+    private final Color TILE_HOVERED_COLOR = Color.rgb(0, 0, 0, 0.25);
+    private final Color TILE_CLICKED_COLOR = Color.rgb(0, 0, 0, 0.4);
+    private ObjectProperty<Color> colorProperty = new SimpleObjectProperty<>(TILE_NEUTRAL_COLOR);
 
     public SudokuTile(int row, int column) {
         coordinates = new Coordinates(row, column);
-        tile = new Rectangle();
-        tileText = new Text();
-        sudokuTile = new StackPane(tileText, tile);
-        Font tileFont = new Font("Century", 30);
-        tileText.setFont(tileFont);
 
         // Add the tile to the global tileGrid
         tileGrid[getRowIndex()][getColumnIndex()] = this;
-
-        tile.setWidth(PuzzleView.getTileSize());
-        tile.setHeight(PuzzleView.getTileSize());
-        tile.setFill(tileNeutralColor);
-
-        tile.setOnMouseEntered(mouseEvent -> {
-            if (!clickedProperty.get()) {
-                this.lastColor = (Color) tile.getFill();
-                tile.setFill(tileHoveredColor);
-            }
-        });
-
-        tile.setOnMouseExited(mouseEvent -> {
-            if (!clickedProperty.get()) {
-                tile.setFill(lastColor);
-            }
-        });
-
-        tile.setOnMouseClicked(mouseEvent -> {
-            // Unselect the tile if it is clicked again
-            if (getLastClickedTile() == this) {
-                unselectTile();
-            }
-            else {
-                // Update clicked status of the last clicked tile
-                if (getLastClickedTile() != null) {
-                    unselectTile();
-                }
-
-                // Update clicked status of current clicked tile
-                lastClickedTile = this;
-                this.setTileColor(tileClickedColor);
-                clickedProperty.set(true);
-                this.setRelevantTiles();
-            }
-        });
     }
 
     public static SudokuTile[][] getTileGrid() {
         return tileGrid;
-    }
-
-    /**
-     * Gets the JavaFX node for the SudokuTile
-     * @return The SudokuTile's JavaFX node
-     */
-    public Node getTileNode() {
-        return sudokuTile;
     }
 
     public Coordinates getCoordinates() {
@@ -107,8 +51,28 @@ public class SudokuTile {
         return coordinates.column();
     }
 
-    private void setTileColor(Color tileColor) {
-        tile.setFill(tileColor);
+    public Color getColor() {
+        return colorProperty.get();
+    }
+
+    public void setColorNeutral() {
+        colorProperty.set(TILE_NEUTRAL_COLOR);
+    }
+
+    public void setColorRelevant() {
+        colorProperty.set(TILE_RELEVANT_COLOR);
+    }
+
+    public void setColorHovered() {
+        colorProperty.set(TILE_HOVERED_COLOR);
+    }
+
+    public void setColorClicked() {
+        colorProperty.set(TILE_CLICKED_COLOR);
+    }
+
+    public ObjectProperty<Color> colorProperty() {
+        return colorProperty;
     }
 
     public StringBuilder getCandidates() {
@@ -202,6 +166,15 @@ public class SudokuTile {
      */
     public static SudokuTile getTileByCoordinates(int row, int column) {
         return tileGrid[row][column];
+    }
+
+    /**
+     * Gets a reference to the SudokuTile at the coordinates of the given Coordinates object
+     * @param coordinates the Coordinates object with the coordinates of the tile
+     * @return the SudokuTile at the given coordinates
+     */
+    public static SudokuTile getTileByCoordinates(Coordinates coordinates) {
+        return tileGrid[coordinates.row()][coordinates.column()];
     }
 
     /**
@@ -364,21 +337,13 @@ public class SudokuTile {
     }
 
     /**
-     * Sets the value associated with the SudokuTile and displays it if it is not null
+     * Sets the value associated with the SudokuTile and displays it if it is not 0
      * @param value the value to set for the SudokuTile
      */
-    public void setValue(Integer value) {
-        // Do not accept a value not in the range 1-9 unless it is null
-        if (value == null || (value >= 1 && value <= 9)) {
+    public void setValue(int value) {
+        // Do not accept a value not in the range 1-9 unless it is 0
+        if (value == 0 || (value >= 1 && value <= 9)) {
             this.valueProperty.set(value);
-
-            // Do not display value of null
-            if (value == null) {
-                tileText.setText("");
-            }
-            else {
-                tileText.setText(String.valueOf(value));
-            }
         }
     }
 
@@ -386,7 +351,7 @@ public class SudokuTile {
      * Gets a reference to the tile's valueProperty
      * @return the tile's valueProperty itself
      */
-    public SimpleObjectProperty<Integer> valueProperty() {
+    public SimpleIntegerProperty valueProperty() {
         return valueProperty;
     }
 
@@ -395,7 +360,6 @@ public class SudokuTile {
      * @return the last clicked SudokuTile
      */
     public static SudokuTile getLastClickedTile() {
-        // Check that the last clicked tile is still selected
         return lastClickedTile;
     }
 
@@ -405,16 +369,6 @@ public class SudokuTile {
      */
     public static void setLastClickedTile(SudokuTile tile) {
         lastClickedTile = tile;
-    }
-
-    /**
-     * Unselects the last clicked tile
-     */
-    public void unselectTile() {
-        lastClickedTile.setTileColor(tileNeutralColor);
-        lastClickedTile.clickedProperty.set(false);
-        lastClickedTile.unsetRelevantTiles();
-        lastClickedTile = null;
     }
 
     /**
@@ -465,7 +419,31 @@ public class SudokuTile {
         return relevantProperty;
     }
 
-    private void setRelevantTiles() {
+    /**
+     * Gets the value of the tile's hoveredProperty
+     * @return the value of the tile's hoveredProperty
+     */
+    public boolean getHovered() {
+        return hoveredProperty.get();
+    }
+
+    /**
+     * Sets the value of the tile's hoveredProperty
+     * @param hovered the new value for the tile's hoveredProperty
+     */
+    public void setHovered(boolean hovered) {
+        hoveredProperty.set(hovered);
+    }
+
+    /**
+     * Gets a reference to the tile's hoveredProperty
+     * @return the tile's hoveredProperty itself
+     */
+    public SimpleBooleanProperty hoveredProperty() {
+        return hoveredProperty;
+    }
+
+    public void setRelevantTiles() {
         for (SudokuTile[] row : tileGrid) {
             for (SudokuTile tile : row) {
                 if (tile != this && (tile.getRowIndex() == this.getRowIndex() || tile.getColumnIndex() == this.getColumnIndex())) {
@@ -475,7 +453,7 @@ public class SudokuTile {
         }
     }
 
-    private void unsetRelevantTiles() {
+    public void unsetRelevantTiles() {
         for (SudokuTile[] row : tileGrid) {
             for (SudokuTile tile : row) {
                 if (tile != this && (tile.getRowIndex() == this.getRowIndex() || tile.getColumnIndex() == this.getColumnIndex())) {

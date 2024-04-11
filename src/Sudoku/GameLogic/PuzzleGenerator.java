@@ -63,7 +63,7 @@ public class PuzzleGenerator {
         for (SudokuTile[] row : tileGrid) {
             for (SudokuTile tile : row) {
                 if (!tile.isEmpty()) {
-                    tile.setValue(null);
+                    tile.setValue(0);
                 }
 
                 tile.setCandidates("123456789");
@@ -298,7 +298,7 @@ public class PuzzleGenerator {
                 while (!filledTileStack.isEmpty()) {
                     nextTile = filledTileStack.pop();
                     addUnfilledCoordinates(nextTile.getCoordinates());
-                    nextTile.setValue(null);
+                    nextTile.setValue(0);
                 }
 
                 setBoardCandidates(candidateStates.get(nextTile));
@@ -410,7 +410,7 @@ public class PuzzleGenerator {
 
         // Add nextTile back to the list of unfilledCoordinates
         addUnfilledCoordinates(nextTile.getCoordinates());
-        nextTile.setValue(null);
+        nextTile.setValue(0);
 
         return nextTile;
     }
@@ -482,7 +482,7 @@ public class PuzzleGenerator {
         int previousValue = tile.getValue();
 
         // Empty the tile
-        tile.setValue(null);
+        tile.setValue(0);
 
         // Update candidates for the empty tile
         restoreCandidates(tile);
