@@ -6,6 +6,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.util.converter.NumberStringConverter;
 
 public class PuzzleController {
     private final SudokuModel sudokuModel;
@@ -72,5 +73,14 @@ public class PuzzleController {
 
     public void updateTileText(Text tileText, String text) {
         tileText.setVisible(!text.equals("0"));
+    }
+
+    public void bindTileText(Text tileText, Coordinates coordinates) {
+        tileText.textProperty().bindBidirectional(sudokuModel.tileValueProperty(coordinates),
+                new NumberStringConverter());
+    }
+
+    public void bindTileFill(Rectangle tileTint, Coordinates coordinates) {
+        tileTint.fillProperty().bind(sudokuModel.tileColorProperty(coordinates));
     }
 }

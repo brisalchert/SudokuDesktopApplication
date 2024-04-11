@@ -13,7 +13,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.util.converter.NumberStringConverter;
 
 public class PuzzleView {
     private final SudokuModel sudokuModel;
@@ -149,7 +148,7 @@ public class PuzzleView {
                 puzzleController.updateTileFill(coordinates));
 
         // Bind the tile's fillProperty to the color from the model
-        tileTint.fillProperty().bind(sudokuModel.tileColorProperty(coordinates));
+        puzzleController.bindTileFill(tileTint, coordinates);
 
         // Add tile text
         Text tileText = new Text();
@@ -161,7 +160,7 @@ public class PuzzleView {
                 puzzleController.updateTileText(tileText, newText));
 
         // Bind the tile's textProperty to the actual value from the model
-        tileText.textProperty().bindBidirectional(sudokuModel.tileValueProperty(coordinates), new NumberStringConverter());
+        puzzleController.bindTileText(tileText, coordinates);
 
         // Add background, text, and the tileTint to the tilePane
         tilePane = new StackPane(tileBackground, tileText, tileTint);
