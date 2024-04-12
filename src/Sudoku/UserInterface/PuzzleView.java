@@ -140,8 +140,8 @@ public class PuzzleView {
         tileTint.setUserData(coordinates);
 
         // Add a listener that updates the tile's hovered property on hover
-        tileTint.hoverProperty().addListener((observable, oldValue, newValue) ->
-                puzzleController.updateTileHovered(coordinates, newValue));
+        tileTint.hoverProperty().addListener((observable, oldHover, newHover) ->
+                puzzleController.updateTileHovered(coordinates, newHover));
 
         // Add a listener that updates the tileTint on hover
         tileTint.hoverProperty().addListener((observable, oldValue, newValue) ->
