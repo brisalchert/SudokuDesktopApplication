@@ -17,7 +17,7 @@ import javafx.scene.text.Text;
 public class PuzzleView {
     private final SudokuModel sudokuModel;
     private final PuzzleController puzzleController;
-    private final StackPane puzzleRoot;
+    private final AnchorPane puzzleRoot;
     private final Scene puzzleScene;
     private final static int TILE_WIDTH_AND_HEIGHT = 64;
     private final int TILE_SPACING = 2;
@@ -31,7 +31,7 @@ public class PuzzleView {
     public PuzzleView(SudokuModel sudokuModel, PuzzleController puzzleController) {
         this.sudokuModel = sudokuModel;
         this.puzzleController = puzzleController;
-        this.puzzleRoot = new StackPane();
+        this.puzzleRoot = new AnchorPane();
         this.puzzleScene = new Scene(puzzleRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
         puzzleScene.getStylesheets().add(PuzzleView.class.getResource("style.css").toExternalForm());
         initializePuzzleInterface();
@@ -49,13 +49,15 @@ public class PuzzleView {
         initializePuzzlePane(puzzleRoot);
     }
 
-    private void initializePuzzlePane(StackPane puzzleRoot) {
+    private void initializePuzzlePane(AnchorPane puzzleRoot) {
         // Create a BorderPane for the board elements
         BorderPane puzzlePane = new BorderPane();
         puzzlePane.setId("puzzlePane");
 
         // Add the puzzlePane to the root
         puzzleRoot.getChildren().add(puzzlePane);
+        puzzlePane.prefWidthProperty().bind(puzzleScene.widthProperty());
+        puzzlePane.prefHeightProperty().bind(puzzleScene.heightProperty());
 
         // Call interface initialization functions
         drawTitle(puzzlePane);
