@@ -2,6 +2,6 @@
     window-background: rgba(168, 136, 98, 1);
 }
 
-#puzzleRoot {
+#puzzlePane {
     -fx-background-color: window-background;
 }
