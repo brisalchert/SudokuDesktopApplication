@@ -1,11 +1,14 @@
 package Sudoku.UserInterface;
 
+import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -13,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 public class PuzzleView {
     private final SudokuModel sudokuModel;
@@ -47,12 +51,13 @@ public class PuzzleView {
 
     private void initializePuzzleInterface() {
         initializePuzzlePane(puzzleRoot);
+        initializeSideBarMenu(puzzleRoot);
     }
 
     private void initializePuzzlePane(AnchorPane puzzleRoot) {
         // Create a BorderPane for the board elements
         BorderPane puzzlePane = new BorderPane();
-        puzzlePane.setId("puzzlePane");
+        puzzlePane.setId("puzzle-pane");
 
         // Add the puzzlePane to the root
         puzzleRoot.getChildren().add(puzzlePane);
@@ -62,6 +67,59 @@ public class PuzzleView {
         // Call interface initialization functions
         drawTitle(puzzlePane);
         drawSudokuBoard(puzzlePane);
+    }
+
+    private void initializeSideBarMenu(AnchorPane puzzleRoot) {
+        // Create a Pane to shade the puzzle when the menu is active
+        Pane shadowPane = new Pane();
+        shadowPane.setId("shadow-pane");
+        puzzleRoot.getChildren().add(shadowPane);
+        shadowPane.prefWidthProperty().bind(puzzleScene.widthProperty());
+        shadowPane.prefHeightProperty().bind(puzzleScene.heightProperty());
+        shadowPane.setVisible(false);
+
+        // Create a Pane for the sidebar menu
+        Pane sidebarPane = new Pane();
+        sidebarPane.setId("sidebar-pane");
+        sidebarPane.prefWidthProperty().bind(puzzleScene.widthProperty().divide(3));
+        sidebarPane.prefHeightProperty().bind(puzzleScene.heightProperty());
+
+        // Create a button to access the sidebar menu
+        Button sidebarButton = new Button("Menu");
+        sidebarButton.setPrefWidth(100);
+        sidebarButton.setPrefHeight(50);
+        sidebarButton.setId("sidebar-button");
+
+        // Add the button and menu to a group
+        Group sidebarGroup = new Group(sidebarButton, sidebarPane);
+        puzzleRoot.getChildren().add(sidebarGroup);
+
+        // Set the menu to sit to the right of the button
+        sidebarPane.setTranslateX(sidebarButton.getPrefWidth());
+
+        // Set the sidebar group to sit on the right side of the scene, hiding the menu
+        sidebarGroup.setTranslateX(puzzleScene.getWidth() - sidebarButton.getPrefWidth());
+
+        // Define animations for the menu
+        TranslateTransition openSidebarMenu = new TranslateTransition(Duration.millis(200), sidebarGroup);
+        openSidebarMenu.setByX(-sidebarPane.getPrefWidth());
+
+        TranslateTransition closeSidebarMenu = new TranslateTransition(Duration.millis(200), sidebarGroup);
+        closeSidebarMenu.setByX(sidebarPane.getPrefWidth());
+
+        // Define logic for the button
+        sidebarButton.setOnAction(actionEvent -> {
+            if (sidebarGroup.getTranslateX() == (puzzleScene.getWidth() - sidebarButton.getPrefWidth())) {
+                openSidebarMenu.play();
+                shadowPane.setVisible(true);
+                sidebarButton.setText("Close");
+            }
+            else {
+                closeSidebarMenu.play();
+                shadowPane.setVisible(false);
+                sidebarButton.setText("Menu");
+            }
+        });
     }
 
     private void drawTitle(BorderPane puzzleRoot) {
