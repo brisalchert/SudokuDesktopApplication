@@ -25,7 +25,6 @@ public class PuzzleView {
     private final int BOARD_WIDTH_AND_HEIGHT = (9 * TILE_WIDTH_AND_HEIGHT) + (6 * TILE_SPACING) + (2 * BOX_SPACING);
     private final int WINDOW_WIDTH = 694;
     private final int WINDOW_HEIGHT = 794;
-    private final Color WINDOW_BACKGROUND_COLOR = Color.rgb(168, 136, 98, 1);
     private final Color TILE_BACKGROUND_COLOR = Color.rgb(245, 222, 179, 0.7);
     private final Color TILE_BORDER_COLOR = Color.rgb(30, 30, 30, 0.7);
 
@@ -33,7 +32,9 @@ public class PuzzleView {
         this.sudokuModel = sudokuModel;
         this.puzzleController = puzzleController;
         this.puzzleRoot = new BorderPane();
+        puzzleRoot.setId("puzzleRoot");
         this.puzzleScene = new Scene(puzzleRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+        puzzleScene.getStylesheets().add(PuzzleView.class.getResource("style.css").toExternalForm());
         initializePuzzleInterface();
     }
 
@@ -46,13 +47,8 @@ public class PuzzleView {
     }
 
     private void initializePuzzleInterface() {
-        drawBackground(puzzleRoot);
         drawTitle(puzzleRoot);
         drawSudokuBoard(puzzleRoot);
-    }
-
-    private void drawBackground(BorderPane puzzleRoot) {
-        puzzleScene.setFill(WINDOW_BACKGROUND_COLOR);
     }
 
     private void drawTitle(BorderPane puzzleRoot) {

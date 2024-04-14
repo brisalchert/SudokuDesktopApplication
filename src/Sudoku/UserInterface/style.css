@@ -1,1 +1,7 @@
+.root {
+    window-background: rgba(168, 136, 98, 1);
+}
 
+#puzzleRoot {
+    -fx-background-color: window-background;
+}
