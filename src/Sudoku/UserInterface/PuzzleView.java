@@ -142,22 +142,8 @@ public class PuzzleView {
         tileBackground.setFill(TILE_BACKGROUND_COLOR);
         box.add(tileBackground, boxRow, boxColumn);
 
-        // Draw the tileTint Rectangle (used for shading the tile)
-        Rectangle tileTint = new Rectangle(TILE_WIDTH_AND_HEIGHT, TILE_WIDTH_AND_HEIGHT);
-
-        // Set userData for the tileTint so that it can be looked up by its coordinates
-        tileTint.setUserData(coordinates);
-
-        // Add a listener that updates the tile's hovered property on hover
-        tileTint.hoverProperty().addListener((observable, oldHover, newHover) ->
-                puzzleController.updateTileHovered(coordinates, newHover));
-
-        // Add a listener that updates the tileTint on hover
-        tileTint.hoverProperty().addListener((observable, oldValue, newValue) ->
-                puzzleController.updateTileFill(coordinates));
-
-        // Bind the tile's fillProperty to the color from the model
-        puzzleController.bindTileFill(tileTint, coordinates);
+        // Initialize the TileTint (used for shading the tile)
+        TileTint tileTint = new TileTint(TILE_WIDTH_AND_HEIGHT, TILE_WIDTH_AND_HEIGHT, coordinates);
 
         // Add tile text
         Text tileText = new Text();
@@ -260,7 +246,7 @@ public class PuzzleView {
      * @return a Coordinates object with the coordinates of the tileTint, or null if the rectangle is not part of the
      * tileGrid
      */
-    public Coordinates getCoordinatesByTileTint(Rectangle tileTint) {
+    public Coordinates getCoordinatesByTileTint(TileTint tileTint) {
         // Ensure that the tileTint is part of the tileGrid
         if (tileTint.getUserData() != null) {
             return (Coordinates) tileTint.getUserData();
@@ -274,9 +260,9 @@ public class PuzzleView {
      * @param coordinates the coordinates of the tileTint
      * @return the Rectangle tileTint
      */
-    public Rectangle getTileTintByCoordinates(Coordinates coordinates) {
+    public TileTint getTileTintByCoordinates(Coordinates coordinates) {
         // Get a reference to the tileTint at the given coordinates
-        return (Rectangle) DFSNodeByUserData(coordinates, puzzleRoot);
+        return (TileTint) DFSNodeByUserData(coordinates, puzzleRoot);
     }
 
     /**
@@ -312,5 +298,34 @@ public class PuzzleView {
 
     public void setMouseEventHandler(EventHandler<MouseEvent> mouseEventHandler) {
         puzzleScene.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEventHandler);
+    }
+
+    /**
+     * Custom Rectangle class for distinguishing TileTint Rectangles from other Objects
+     */
+    public class TileTint extends Rectangle {
+        /**
+         * Constructor: Creates a TileTint object as a Rectangle with the coordinates of its corresponding tile as
+         * UserData
+         * @param width the width of the tile
+         * @param height the height of the tile
+         * @param coordinates the coordinates of the tile
+         */
+        public TileTint(int width, int height, Coordinates coordinates) {
+            // Initialize the tileTint Rectangle with coordinates in UserData
+            super(width, height);
+            setUserData(coordinates);
+
+            // Add a listener that updates the tile's hovered property on hover
+            hoverProperty().addListener((observable, oldHover, newHover) ->
+                    puzzleController.updateTileHovered(coordinates, newHover));
+
+            // Add a listener that updates the tileTint on hover
+            hoverProperty().addListener((observable, oldValue, newValue) ->
+                    puzzleController.updateTileFill(coordinates));
+
+            // Bind the tile's fillProperty to the color from the model
+            puzzleController.bindTileFill(this, coordinates);
+        }
     }
 }

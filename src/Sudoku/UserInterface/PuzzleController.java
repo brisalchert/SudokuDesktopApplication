@@ -46,13 +46,13 @@ public class PuzzleController {
             Object target = mouseEvent.getTarget();
 
             // If click is not on a tile, unselect the last-clicked tile
-            if (!(target instanceof Rectangle)) {
+            if (!(target instanceof PuzzleView.TileTint)) {
                 if (sudokuModel.getLastClickedTile() != null) {
                     sudokuModel.updateLastClickedTile(null);
                 }
             }
             else {
-                Coordinates tileCoordinates = puzzleView.getCoordinatesByTileTint((Rectangle) target);
+                Coordinates tileCoordinates = puzzleView.getCoordinatesByTileTint((PuzzleView.TileTint) target);
                 sudokuModel.updateLastClickedTile(tileCoordinates);
             }
 
