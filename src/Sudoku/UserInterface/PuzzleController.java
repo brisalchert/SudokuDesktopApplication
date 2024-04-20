@@ -29,6 +29,22 @@ public class PuzzleController {
         return puzzleView.getPuzzleScene();
     }
 
+    /**
+     * Gets the starting width of the stage, equal to the scene's starting width plus 16 pixels
+     * @return the starting stage width
+     */
+    public int getStartingStageWidth() {
+        return puzzleView.getStartingWindowWidth() + 16;
+    }
+
+    /**
+     * Gets the starting height of the stage, equal to the scene's starting height plus 39 pixels
+     * @return the starting stage height
+     */
+    public int getStartingStageHeight() {
+        return puzzleView.getStartingWindowHeight() + 39;
+    }
+
     public EventHandler<KeyEvent> createKeyEventHandler() {
         EventHandler<KeyEvent> eventHandler = keyEvent -> {
             if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED) {

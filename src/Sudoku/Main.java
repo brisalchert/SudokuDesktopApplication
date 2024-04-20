@@ -14,6 +14,8 @@ public class Main extends Application {
 
             primaryStage.setTitle("Sudoku");
             primaryStage.setScene(puzzleController.getPuzzleScene());
+            primaryStage.setMinWidth(puzzleController.getStartingStageWidth());
+            primaryStage.setMinHeight(puzzleController.getStartingStageHeight());
             primaryStage.show();
         }
         catch (Exception error) {

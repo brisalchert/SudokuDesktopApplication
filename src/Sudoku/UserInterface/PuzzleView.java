@@ -27,8 +27,8 @@ public class PuzzleView {
     private final int TILE_SPACING = 2;
     private final int BOX_SPACING = 4;
     private final int BOARD_WIDTH_AND_HEIGHT = (9 * TILE_WIDTH_AND_HEIGHT) + (6 * TILE_SPACING) + (2 * BOX_SPACING);
-    private final int WINDOW_WIDTH = 694;
-    private final int WINDOW_HEIGHT = 794;
+    private final int STARTING_WINDOW_WIDTH = 694;
+    private final int STARTING_WINDOW_HEIGHT = 794;
     private final Color TILE_BACKGROUND_COLOR = Color.rgb(245, 222, 179, 0.7);
     private final Color TILE_BORDER_COLOR = Color.rgb(30, 30, 30, 0.7);
 
@@ -36,7 +36,7 @@ public class PuzzleView {
         this.sudokuModel = sudokuModel;
         this.puzzleController = puzzleController;
         this.puzzleRoot = new AnchorPane();
-        this.puzzleScene = new Scene(puzzleRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+        this.puzzleScene = new Scene(puzzleRoot, STARTING_WINDOW_WIDTH, STARTING_WINDOW_HEIGHT);
         puzzleScene.getStylesheets().add(PuzzleView.class.getResource("style.css").toExternalForm());
         initializePuzzleInterface();
     }
@@ -47,6 +47,14 @@ public class PuzzleView {
 
     public static int getTileSize() {
         return TILE_WIDTH_AND_HEIGHT;
+    }
+
+    public int getStartingWindowWidth() {
+        return STARTING_WINDOW_WIDTH;
+    }
+
+    public int getStartingWindowHeight() {
+        return STARTING_WINDOW_HEIGHT;
     }
 
     private void initializePuzzleInterface() {
@@ -139,7 +147,7 @@ public class PuzzleView {
         titleBox.setAlignment(Pos.CENTER);
         titleBox.getChildren().add(title);
         titleBox.setPadding(new Insets(20));
-        titleBox.setPrefWidth(WINDOW_WIDTH);
+        titleBox.setPrefWidth(STARTING_WINDOW_WIDTH);
 
         puzzleRoot.setTop(titleBox);
     }
