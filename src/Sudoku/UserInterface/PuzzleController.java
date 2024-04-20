@@ -6,16 +6,23 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
 public class PuzzleController {
     private final SudokuModel sudokuModel;
     private final PuzzleView puzzleView;
+    private final Stage primaryStage;
 
     // Constructor: takes in the model and view as parameters
-    public PuzzleController(SudokuModel sudokuModel) {
+    public PuzzleController(SudokuModel sudokuModel, Stage primaryStage) {
         this.sudokuModel = sudokuModel;
         this.puzzleView = new PuzzleView(sudokuModel, this);
+        this.primaryStage = primaryStage;
+
+        primaryStage.setScene(getPuzzleScene());
+        primaryStage.setMinWidth(getStartingStageWidth());
+        primaryStage.setMinHeight(getStartingStageHeight());
 
         puzzleView.setKeyEventHandler(createKeyEventHandler());
         puzzleView.setMouseEventHandler(createMouseEventHandler());

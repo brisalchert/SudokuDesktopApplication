@@ -1,6 +1,6 @@
 package Sudoku;
 
-import Sudoku.UserInterface.PuzzleController;
+import Sudoku.UserInterface.MenuController;
 import Sudoku.UserInterface.SudokuModel;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -10,12 +10,9 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         try {
             SudokuModel sudokuModel = new SudokuModel();
-            PuzzleController puzzleController = new PuzzleController(sudokuModel);
+            MenuController menuController = new MenuController(sudokuModel, primaryStage);
 
             primaryStage.setTitle("Sudoku");
-            primaryStage.setScene(puzzleController.getPuzzleScene());
-            primaryStage.setMinWidth(puzzleController.getStartingStageWidth());
-            primaryStage.setMinHeight(puzzleController.getStartingStageHeight());
             primaryStage.show();
         }
         catch (Exception error) {
