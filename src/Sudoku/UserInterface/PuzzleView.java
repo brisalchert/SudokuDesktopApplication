@@ -23,12 +23,12 @@ public class PuzzleView {
     private final PuzzleController puzzleController;
     private final AnchorPane puzzleRoot;
     private final Scene puzzleScene;
-    private final static int TILE_WIDTH_AND_HEIGHT = 64;
+    private final static int TILE_WIDTH_AND_HEIGHT = 48;
     private final int TILE_SPACING = 2;
     private final int BOX_SPACING = 4;
     private final int BOARD_WIDTH_AND_HEIGHT = (9 * TILE_WIDTH_AND_HEIGHT) + (6 * TILE_SPACING) + (2 * BOX_SPACING);
-    private final int STARTING_WINDOW_WIDTH = 694;
-    private final int STARTING_WINDOW_HEIGHT = 794;
+    private final int STARTING_WINDOW_WIDTH = 552;
+    private final int STARTING_WINDOW_HEIGHT = 652;
     private final Color TILE_BACKGROUND_COLOR = Color.rgb(245, 222, 179, 0.7);
     private final Color TILE_BORDER_COLOR = Color.rgb(30, 30, 30, 0.7);
 
@@ -222,7 +222,7 @@ public class PuzzleView {
 
         // Add tile text
         Text tileText = new Text();
-        Font tileFont = new Font("Century", 30);
+        Font tileFont = new Font("Century", ((double) TILE_WIDTH_AND_HEIGHT / 2));
         tileText.setFont(tileFont);
 
         // Add a listener that sets tile text to visible only if the value is 1-9
