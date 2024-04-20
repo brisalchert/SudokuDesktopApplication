@@ -100,21 +100,30 @@ public class PuzzleView {
         // Set the sidebar group to sit on the right side of the scene, hiding the menu
         sidebarGroup.setTranslateX(puzzleScene.getWidth() - sidebarButton.getPrefWidth());
 
+        // Add listener for moving the sidebar group with window size changes
+        puzzleScene.widthProperty().addListener((observable, oldValue, newValue) -> {
+            if (sidebarGroup.getTranslateX() == ((double) oldValue - sidebarButton.getPrefWidth())) {
+                sidebarGroup.setTranslateX(puzzleScene.getWidth() - sidebarButton.getPrefWidth());
+            }
+            else {
+                sidebarGroup.setTranslateX(puzzleScene.getWidth() - sidebarButton.getPrefWidth() - sidebarPane.getPrefWidth());
+            }
+        });
+
         // Define animations for the menu
         TranslateTransition openSidebarMenu = new TranslateTransition(Duration.millis(200), sidebarGroup);
-        openSidebarMenu.setByX(-sidebarPane.getPrefWidth());
-
         TranslateTransition closeSidebarMenu = new TranslateTransition(Duration.millis(200), sidebarGroup);
-        closeSidebarMenu.setByX(sidebarPane.getPrefWidth());
 
         // Define logic for the button
         sidebarButton.setOnAction(actionEvent -> {
             if (sidebarGroup.getTranslateX() == (puzzleScene.getWidth() - sidebarButton.getPrefWidth())) {
+                openSidebarMenu.setByX(-sidebarPane.getPrefWidth());
                 openSidebarMenu.play();
                 shadowPane.setVisible(true);
                 sidebarButton.setText("Close");
             }
             else {
+                closeSidebarMenu.setByX(sidebarPane.getPrefWidth());
                 closeSidebarMenu.play();
                 shadowPane.setVisible(false);
                 sidebarButton.setText("Menu");
