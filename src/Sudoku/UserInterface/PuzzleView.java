@@ -27,8 +27,8 @@ public class PuzzleView {
     private final int TILE_SPACING = 2;
     private final int BOX_SPACING = 3;
     private final int BOARD_WIDTH_AND_HEIGHT = (9 * TILE_WIDTH_AND_HEIGHT) + (6 * TILE_SPACING) + (2 * BOX_SPACING);
-    private final int STARTING_WINDOW_WIDTH = 552;
-    private final int STARTING_WINDOW_HEIGHT = 652;
+    private final int STARTING_WINDOW_WIDTH = BOARD_WIDTH_AND_HEIGHT + 100;
+    private final int STARTING_WINDOW_HEIGHT = BOARD_WIDTH_AND_HEIGHT + 200;
     private final Color TILE_BACKGROUND_COLOR = Color.rgb(245, 222, 179, 0.7);
     private final Color TILE_BORDER_COLOR = Color.rgb(30, 30, 30, 0.7);
 

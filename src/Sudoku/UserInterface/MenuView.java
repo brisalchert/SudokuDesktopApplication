@@ -16,8 +16,8 @@ public class MenuView {
     private final MenuController menuController;
     private final AnchorPane menuRoot;
     private final Scene menuScene;
-    private final int STARTING_WINDOW_WIDTH = 552;
-    private final int STARTING_WINDOW_HEIGHT = 652;
+    private final int STARTING_WINDOW_WIDTH = 550;
+    private final int STARTING_WINDOW_HEIGHT = 650;
 
     public MenuView(SudokuModel sudokuModel, MenuController menuController) {
         this.sudokuModel = sudokuModel;
