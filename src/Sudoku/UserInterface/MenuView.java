@@ -73,22 +73,29 @@ public class MenuView {
     }
 
     private void drawMenuSelections(BorderPane menuRoot) {
+        // Create an AnchorPane for menu elements
+        AnchorPane menuPane = new AnchorPane();
+        menuRoot.setCenter(menuPane);
+
         // Create a VBox to store the menu buttons
         VBox menuSelections = new VBox();
-        menuRoot.setCenter(menuSelections);
-        menuSelections.setAlignment(Pos.CENTER);
+        menuPane.getChildren().add(menuSelections);
+        menuSelections.setAlignment(Pos.TOP_CENTER);
+        menuSelections.prefWidthProperty().bind(menuScene.widthProperty());
+        menuSelections.translateYProperty().bind(menuScene.heightProperty().divide(6));
         menuSelections.setSpacing(10);
 
-        // Create the resumeGameButton
-        Button resumeGameButton = new Button("Resume Game");
-        resumeGameButton.setId("resume-game-button");
-        resumeGameButton.setPrefWidth(300);
-        resumeGameButton.setPrefHeight(40);
-        menuSelections.getChildren().add(resumeGameButton);
+        // Determine whether to add the resumeGameButton
+        if (menuController.puzzleInstanceExists()) {
+            // Create the resumeGameButton
+            Button resumeGameButton = new Button("Resume Game");
+            resumeGameButton.setId("resume-game-button");
+            resumeGameButton.setPrefWidth(300);
+            resumeGameButton.setPrefHeight(40);
+            menuSelections.getChildren().add(resumeGameButton);
 
-        // Determine whether to display the resumeGameButton
-        if (!menuController.puzzleInstanceExists()) {
-            resumeGameButton.setVisible(false);
+            // Add resume game button functionality
+            menuController.initResumeGameButton(resumeGameButton);
         }
 
         // Create the newGameButton
@@ -97,9 +104,6 @@ public class MenuView {
         newGameButton.setPrefWidth(300);
         newGameButton.setPrefHeight(40);
         menuSelections.getChildren().add(newGameButton);
-
-        // Add resume game button functionality
-        menuController.initResumeGameButton(resumeGameButton);
 
         // Add new game button functionality
         menuController.initNewGameButton(newGameButton);
