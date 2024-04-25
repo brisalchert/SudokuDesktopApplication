@@ -36,7 +36,7 @@ public class PuzzleView {
         this.sudokuModel = sudokuModel;
         this.puzzleController = puzzleController;
         this.puzzleRoot = new AnchorPane();
-        this.puzzleScene = new Scene(puzzleRoot, STARTING_WINDOW_WIDTH, STARTING_WINDOW_HEIGHT);
+        this.puzzleScene = new Scene(puzzleRoot);
         puzzleScene.getStylesheets().add(PuzzleView.class.getResource("style.css").toExternalForm());
         initializePuzzleInterface();
     }

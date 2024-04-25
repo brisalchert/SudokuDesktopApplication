@@ -22,8 +22,6 @@ public class PuzzleController {
         this.primaryStage = primaryStage;
 
         primaryStage.setScene(getPuzzleScene());
-        primaryStage.setMinWidth(getStartingStageWidth());
-        primaryStage.setMinHeight(getStartingStageHeight());
 
         puzzleView.setKeyEventHandler(createKeyEventHandler());
         puzzleView.setMouseEventHandler(createMouseEventHandler());

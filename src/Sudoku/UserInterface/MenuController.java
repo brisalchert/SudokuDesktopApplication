@@ -16,8 +16,6 @@ public class MenuController {
         this.primaryStage = primaryStage;
 
         primaryStage.setScene(getMenuScene());
-        primaryStage.setMinWidth(getStartingStageWidth());
-        primaryStage.setMinHeight(getStartingStageHeight());
     }
 
     public MenuView getMenuView() {

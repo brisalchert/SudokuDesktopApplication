@@ -13,6 +13,8 @@ public class Main extends Application {
             MenuController menuController = new MenuController(sudokuModel, primaryStage);
 
             primaryStage.setTitle("Sudoku");
+            primaryStage.setMinWidth(550);
+            primaryStage.setMinHeight(650);
             primaryStage.show();
         }
         catch (Exception error) {

@@ -23,7 +23,7 @@ public class MenuView {
         this.sudokuModel = sudokuModel;
         this.menuController = menuController;
         this.menuRoot = new AnchorPane();
-        this.menuScene = new Scene(menuRoot, STARTING_WINDOW_WIDTH, STARTING_WINDOW_HEIGHT);
+        this.menuScene = new Scene(menuRoot);
         menuScene.getStylesheets().add(MenuView.class.getResource("style.css").toExternalForm());
         initializeMenuInterface();
     }
