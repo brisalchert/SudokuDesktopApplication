@@ -32,8 +32,6 @@ public class PuzzleView {
     private final Color TILE_BACKGROUND_COLOR = Color.rgb(245, 222, 179, 0.7);
     private final Color TILE_BORDER_COLOR = Color.rgb(30, 30, 30, 0.7);
 
-    // TODO: Add board resizing on window resize
-
     public PuzzleView(SudokuModel sudokuModel, PuzzleController puzzleController) {
         this.sudokuModel = sudokuModel;
         this.puzzleController = puzzleController;
@@ -219,13 +217,39 @@ public class PuzzleView {
         tileBackground.setFill(TILE_BACKGROUND_COLOR);
         box.add(tileBackground, boxRow, boxColumn);
 
+        // Add listener to scale tile size with window width
+        puzzleScene.widthProperty().addListener((observableValue, oldValue, newValue) -> {
+            tileBackground.setWidth(getMinTileDimension());
+            tileBackground.setHeight(getMinTileDimension());
+            getTileTintByCoordinates(coordinates).setWidth(getMinTileDimension());
+            getTileTintByCoordinates(coordinates).setHeight(getMinTileDimension());
+        });
+
+        // Add listener to scale tile size with window height
+        puzzleScene.heightProperty().addListener((observableValue, oldValue, newValue) -> {
+            tileBackground.setHeight(getMinTileDimension());
+            tileBackground.setWidth(getMinTileDimension());
+            getTileTintByCoordinates(coordinates).setHeight(getMinTileDimension());
+            getTileTintByCoordinates(coordinates).setWidth(getMinTileDimension());
+        });
+
         // Initialize the TileTint (used for shading the tile)
         TileTint tileTint = new TileTint(TILE_WIDTH_AND_HEIGHT, TILE_WIDTH_AND_HEIGHT, coordinates);
 
         // Add tile text
         Text tileText = new Text();
-        Font tileFont = new Font("Century", ((double) TILE_WIDTH_AND_HEIGHT / 3 * 2));
+        Font tileFont = new Font("Century", ((double) TILE_WIDTH_AND_HEIGHT / 2));
         tileText.setFont(tileFont);
+
+        // Add a listener to scale tile font size with window width
+        puzzleScene.widthProperty().addListener((observableValue, oldValue, newValue) -> {
+            tileText.setFont(new Font("Century", (getMinTileDimension() / 2)));
+        });
+
+        // Add a listener to scale tile font size with window height
+        puzzleScene.heightProperty().addListener((observableValue, oldValue, newValue) -> {
+            tileText.setFont(new Font("Century", (getMinTileDimension() / 2)));
+        });
 
         // Add a listener that sets tile text to visible only if the value is 1-9
         tileText.textProperty().addListener((observable, oldText, newText) ->
@@ -244,6 +268,18 @@ public class PuzzleView {
     private void drawGridLines(StackPane board) {
         VBox horizontalGridLines = createHorizontalGridLines();
         HBox verticalGridLines = createVerticalGridLines();
+
+        // Add listener to scale line spacing with window width
+        puzzleScene.widthProperty().addListener((observableValue, oldValue, newValue) -> {
+            verticalGridLines.setSpacing(getMinTileDimension());
+            horizontalGridLines.setSpacing(getMinTileDimension());
+        });
+
+        // Add listener to scale line spacing with window height
+        puzzleScene.heightProperty().addListener((observableValue, oldValue, newValue) -> {
+            horizontalGridLines.setSpacing(getMinTileDimension());
+            verticalGridLines.setSpacing(getMinTileDimension());
+        });
 
         StackPane gridLineStack = new StackPane(horizontalGridLines, verticalGridLines);
         board.getChildren().add(gridLineStack);
@@ -307,6 +343,26 @@ public class PuzzleView {
                 gridLine.setHeight(thickness);
                 gridLine.setWidth(BOARD_WIDTH_AND_HEIGHT);
             }
+
+            // Add listener to scale line length with window width
+            puzzleScene.widthProperty().addListener((observableValue, oldValue, newValue) -> {
+                if (isVertical) {
+                    gridLine.setHeight(getMinGridLineLength());
+                }
+                else {
+                    gridLine.setWidth(getMinGridLineLength());
+                }
+            });
+
+            // Add listener to scale line length with window height
+            puzzleScene.heightProperty().addListener((observableValue, oldValue, newValue) -> {
+                if (!isVertical) {
+                    gridLine.setWidth(getMinGridLineLength());
+                }
+                else {
+                    gridLine.setHeight(getMinGridLineLength());
+                }
+            });
 
             gridLines.getChildren().add(gridLine);
 
@@ -375,6 +431,32 @@ public class PuzzleView {
 
     public void setMouseEventHandler(EventHandler<MouseEvent> mouseEventHandler) {
         puzzleScene.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEventHandler);
+    }
+
+    /**
+     * Gets the minimum stable tile dimension based on the current window size
+     * @return the minimum stable tile dimension
+     */
+    private double getMinTileDimension() {
+        double tileTrueWidth = ((puzzleScene.getWidth() - 100 - (2 * BOX_SPACING) - (6 * TILE_SPACING)) / 9);
+        double tileTrueHeight = ((puzzleScene.getHeight() - 200 - (2 * BOX_SPACING) - (6 * TILE_SPACING)) / 9);
+        double tilePrefWidth = tileTrueWidth - (tileTrueWidth % 2);
+        double tilePrefHeight = tileTrueHeight - (tileTrueHeight % 2);
+
+        return Math.min(tilePrefWidth, tilePrefHeight);
+    }
+
+    /**
+     * Gets the minimum stable grid line length based on the current window size
+     * @return the minimum stable grid line length
+     */
+    private double getMinGridLineLength() {
+        double gridLineTrueWidth = (puzzleScene.getWidth() - 100);
+        double gridLineTrueHeight = (puzzleScene.getHeight() - 200);
+        double gridLinePrefWidth = gridLineTrueWidth - (gridLineTrueWidth % 18);
+        double gridLinePrefHeight = gridLineTrueHeight - (gridLineTrueHeight % 18);
+
+        return Math.min(gridLinePrefWidth, gridLinePrefHeight);
     }
 
     /**
