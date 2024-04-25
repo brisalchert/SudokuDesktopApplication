@@ -87,7 +87,7 @@ public class PuzzleView {
         shadowPane.setVisible(false);
 
         // Create a Pane for the sidebar menu
-        Pane sidebarPane = new Pane();
+        Pane sidebarPane = new AnchorPane();
         sidebarPane.setId("sidebar-pane");
         sidebarPane.prefWidthProperty().bind(puzzleScene.widthProperty().divide(3));
         sidebarPane.prefHeightProperty().bind(puzzleScene.heightProperty());
@@ -97,6 +97,21 @@ public class PuzzleView {
         sidebarButton.setPrefWidth(100);
         sidebarButton.setPrefHeight(50);
         sidebarButton.setId("sidebar-button");
+
+        // Create a main menu button in the sidebar menu
+        Button mainMenuButton = new Button("Main Menu");
+        mainMenuButton.prefWidthProperty().bind(sidebarPane.prefWidthProperty().divide(3).multiply(2));
+        mainMenuButton.setPrefHeight(50);
+        mainMenuButton.setId("main-menu-button");
+
+        // Create a VBox for sidebar menu options
+        VBox sidebarVBox = new VBox();
+        sidebarVBox.getChildren().add(mainMenuButton);
+        sidebarVBox.translateXProperty().bind(sidebarPane.prefWidthProperty().divide(6));
+        sidebarVBox.translateYProperty().bind(sidebarPane.prefHeightProperty().divide(10));
+
+        // Add the VBox to an HBox in the sidebarPane
+        sidebarPane.getChildren().add(sidebarVBox);
 
         // Add the button and menu to a group
         Group sidebarGroup = new Group(sidebarButton, sidebarPane);
@@ -122,7 +137,7 @@ public class PuzzleView {
         TranslateTransition openSidebarMenu = new TranslateTransition(Duration.millis(200), sidebarGroup);
         TranslateTransition closeSidebarMenu = new TranslateTransition(Duration.millis(200), sidebarGroup);
 
-        // Define logic for the button
+        // Define logic for the sidebar button
         sidebarButton.setOnAction(actionEvent -> {
             if (sidebarGroup.getTranslateX() == (puzzleScene.getWidth() - sidebarButton.getPrefWidth())) {
                 openSidebarMenu.setByX(-sidebarPane.getPrefWidth());
@@ -137,6 +152,9 @@ public class PuzzleView {
                 sidebarButton.setText("Menu");
             }
         });
+
+        // Define logic for the main menu button
+        puzzleController.initMainMenuButton(mainMenuButton);
 
         // Define logic for clicking the shadowPane
         shadowPane.setOnMouseClicked(actionEvent -> {

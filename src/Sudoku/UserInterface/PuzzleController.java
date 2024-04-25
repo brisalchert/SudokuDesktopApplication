@@ -2,6 +2,7 @@ package Sudoku.UserInterface;
 
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
@@ -105,5 +106,11 @@ public class PuzzleController {
 
     public void bindTileFill(Rectangle tileTint, Coordinates coordinates) {
         tileTint.fillProperty().bind(sudokuModel.tileColorProperty(coordinates));
+    }
+
+    public void initMainMenuButton(Button mainMenuButton) {
+        mainMenuButton.setOnAction(e -> {
+            MenuController menuController = new MenuController(sudokuModel, primaryStage);
+        });
     }
 }

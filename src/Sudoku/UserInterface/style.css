@@ -15,6 +15,6 @@
     -fx-background-color: sidebar-background;
 }
 
-#sidebar-button, #new-game-button {
+#sidebar-button, #new-game-button, #main-menu-button {
     -fx-background-color: gray;
 }
