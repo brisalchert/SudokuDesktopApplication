@@ -344,10 +344,25 @@ public class PuzzleView {
                 gridLine.setWidth(BOARD_WIDTH_AND_HEIGHT);
             }
 
+            // Set the additional line length for vertical lines on the edge of the board
+            double additionalLength;
+
+            if (isVertical) {
+                if (index == 0 || index == 9) {
+                    additionalLength = (2 * BOX_SPACING);
+                }
+                else {
+                    additionalLength = 0;
+                }
+            }
+            else {
+                additionalLength = 0;
+            }
+
             // Add listener to scale line length with window width
             puzzleScene.widthProperty().addListener((observableValue, oldValue, newValue) -> {
                 if (isVertical) {
-                    gridLine.setHeight(getMinGridLineLength());
+                    gridLine.setHeight(getMinGridLineLength() + additionalLength);
                 }
                 else {
                     gridLine.setWidth(getMinGridLineLength());
@@ -360,7 +375,7 @@ public class PuzzleView {
                     gridLine.setWidth(getMinGridLineLength());
                 }
                 else {
-                    gridLine.setHeight(getMinGridLineLength());
+                    gridLine.setHeight(getMinGridLineLength() + additionalLength);
                 }
             });
 
