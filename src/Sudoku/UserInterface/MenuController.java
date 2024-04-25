@@ -42,8 +42,18 @@ public class MenuController {
         return menuView.getStartingWindowHeight() + 39;
     }
 
+    public boolean puzzleInstanceExists() {
+        return sudokuModel.hasPuzzle();
+    }
+
     public void initNewGameButton(Button newGameButton) {
         newGameButton.setOnAction(e -> {
+            PuzzleController puzzleController = new PuzzleController(sudokuModel, primaryStage, 25);
+        });
+    }
+
+    public void initResumeGameButton(Button resumeGameButton) {
+        resumeGameButton.setOnAction(e -> {
             PuzzleController puzzleController = new PuzzleController(sudokuModel, primaryStage);
         });
     }

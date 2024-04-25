@@ -12,9 +12,26 @@ import javafx.scene.paint.Color;
 public class SudokuModel {
     private PuzzleGenerator puzzleGenerator;
 
-    // Constructor
+    /**
+     * Constructor: Creates a new SudokuModel instance
+     */
     public SudokuModel() {
-        puzzleGenerator = new PuzzleGenerator(25);
+    }
+
+    /**
+     * Generates a new puzzle with a certain minimum number of clues
+     * @param minimumClues the minimum number of clues
+     */
+    public void generateNewPuzzle(int minimumClues) {
+        puzzleGenerator = new PuzzleGenerator(minimumClues);
+    }
+
+    /**
+     * Returns a boolean corresponding to whether or not a puzzle has been initialized
+     * @return true if a puzzle instance exists
+     */
+    public boolean hasPuzzle() {
+        return puzzleGenerator != null;
     }
 
     // Accessors & Modifiers

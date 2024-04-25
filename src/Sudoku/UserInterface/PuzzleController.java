@@ -15,10 +15,35 @@ public class PuzzleController {
     private final PuzzleView puzzleView;
     private final Stage primaryStage;
 
-    // Constructor: takes in the model and view as parameters
+    /**
+     * Constructor: Creates a new PuzzleController with a new puzzle with a certain minimum number of clues
+     * @param sudokuModel the SudokuModel with the puzzle data
+     * @param primaryStage the stage for displaying GUI information
+     * @param minimumClues the minimum number of clues
+     */
+    public PuzzleController(SudokuModel sudokuModel, Stage primaryStage, int minimumClues) {
+        this.sudokuModel = sudokuModel;
+
+        // Generate a new puzzle
+        sudokuModel.generateNewPuzzle(minimumClues);
+
+        this.puzzleView = new PuzzleView(sudokuModel, this);
+        this.primaryStage = primaryStage;
+
+        primaryStage.setScene(getPuzzleScene());
+
+        puzzleView.setKeyEventHandler(createKeyEventHandler());
+        puzzleView.setMouseEventHandler(createMouseEventHandler());
+    }
+
+    /**
+     * Constructor: Creates a new PuzzleController using a pre-existing puzzle
+     * @param sudokuModel the SudokuModel with the puzzle data
+     * @param primaryStage the stage for displaying GUI information
+     */
     public PuzzleController(SudokuModel sudokuModel, Stage primaryStage) {
         this.sudokuModel = sudokuModel;
-        this.puzzleView = new PuzzleView(sudokuModel, this);
+        this.puzzleView =  new PuzzleView(sudokuModel, this);
         this.primaryStage = primaryStage;
 
         primaryStage.setScene(getPuzzleScene());

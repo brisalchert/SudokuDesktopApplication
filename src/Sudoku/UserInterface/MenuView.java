@@ -77,12 +77,29 @@ public class MenuView {
         VBox menuSelections = new VBox();
         menuRoot.setCenter(menuSelections);
         menuSelections.setAlignment(Pos.CENTER);
+        menuSelections.setSpacing(10);
 
+        // Create the resumeGameButton
+        Button resumeGameButton = new Button("Resume Game");
+        resumeGameButton.setId("resume-game-button");
+        resumeGameButton.setPrefWidth(300);
+        resumeGameButton.setPrefHeight(40);
+        menuSelections.getChildren().add(resumeGameButton);
+
+        // Determine whether to display the resumeGameButton
+        if (!menuController.puzzleInstanceExists()) {
+            resumeGameButton.setVisible(false);
+        }
+
+        // Create the newGameButton
         Button newGameButton = new Button("New Game");
         newGameButton.setId("new-game-button");
         newGameButton.setPrefWidth(300);
         newGameButton.setPrefHeight(40);
         menuSelections.getChildren().add(newGameButton);
+
+        // Add resume game button functionality
+        menuController.initResumeGameButton(resumeGameButton);
 
         // Add new game button functionality
         menuController.initNewGameButton(newGameButton);
