@@ -137,6 +137,14 @@ public class PuzzleView {
                 sidebarButton.setText("Menu");
             }
         });
+
+        // Define logic for clicking the shadowPane
+        shadowPane.setOnMouseClicked(actionEvent -> {
+            closeSidebarMenu.setByX(sidebarPane.getPrefWidth());
+            closeSidebarMenu.play();
+            shadowPane.setVisible(false);
+            sidebarButton.setText("Menu");
+        });
     }
 
     private void drawTitle(BorderPane puzzleRoot) {
