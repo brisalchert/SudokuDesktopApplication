@@ -80,7 +80,7 @@ public class MenuView {
 
         Button newGameButton = new Button("New Game");
         newGameButton.setId("new-game-button");
-        newGameButton.setPrefWidth(200);
+        newGameButton.setPrefWidth(300);
         newGameButton.setPrefHeight(40);
         menuSelections.getChildren().add(newGameButton);
 
