@@ -16,6 +16,7 @@ public class MenuView {
     private final MenuController menuController;
     private final AnchorPane menuRoot;
     private final Scene menuScene;
+    private final String boardFontName = "Lucida Bright";
     private final int STARTING_WINDOW_WIDTH = 550;
     private final int STARTING_WINDOW_HEIGHT = 650;
 
@@ -62,7 +63,7 @@ public class MenuView {
     private void drawTitle(BorderPane menuRoot) {
         HBox titleBox = new HBox();
         Text title = new Text("Sudoku");
-        Font titleFont = new Font("Century", 50);
+        Font titleFont = new Font(boardFontName, 50);
         title.setFont(titleFont);
         titleBox.setAlignment(Pos.CENTER);
         titleBox.getChildren().add(title);

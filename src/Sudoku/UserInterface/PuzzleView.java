@@ -15,6 +15,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -23,6 +24,7 @@ public class PuzzleView {
     private final PuzzleController puzzleController;
     private final AnchorPane puzzleRoot;
     private final Scene puzzleScene;
+    private final String boardFontName = "Lucida Bright";
     private final static int TILE_WIDTH_AND_HEIGHT = 48;
     private final int TILE_SPACING = 2;
     private final int BOX_SPACING = 3;
@@ -168,7 +170,7 @@ public class PuzzleView {
     private void drawTitle(BorderPane puzzleRoot) {
         HBox titleBox = new HBox();
         Text title = new Text("Sudoku");
-        Font titleFont = new Font("Century", 50);
+        Font titleFont = new Font(boardFontName, 50);
         title.setFont(titleFont);
         titleBox.setAlignment(Pos.CENTER);
         titleBox.getChildren().add(title);
@@ -264,17 +266,34 @@ public class PuzzleView {
 
         // Add tile text
         Text tileText = new Text();
-        Font tileFont = new Font("Century", ((double) TILE_WIDTH_AND_HEIGHT / 2));
+        Font tileFont = new Font(boardFontName, ((double) TILE_WIDTH_AND_HEIGHT / 2));
         tileText.setFont(tileFont);
+
+        // Set starting clues' text to bold
+        if (!sudokuModel.getTileEmpty(coordinates)) {
+            tileText.setStyle("-fx-font-weight: bold");
+        }
 
         // Add a listener to scale tile font size with window width
         puzzleScene.widthProperty().addListener((observableValue, oldValue, newValue) -> {
-            tileText.setFont(new Font("Century", (getMinTileDimension() / 2)));
+            // Retain bold if it is present
+            if (tileText.getStyle().equals("-fx-font-weight: bold")) {
+                tileText.setFont(Font.font(boardFontName, FontWeight.BOLD, (getMinTileDimension() / 2)));
+            }
+            else {
+                tileText.setFont(new Font(boardFontName, (getMinTileDimension() / 2)));
+            }
         });
 
         // Add a listener to scale tile font size with window height
         puzzleScene.heightProperty().addListener((observableValue, oldValue, newValue) -> {
-            tileText.setFont(new Font("Century", (getMinTileDimension() / 2)));
+            // Retain bold if it is present
+            if (tileText.getStyle().equals("-fx-font-weight: bold")) {
+                tileText.setFont(Font.font(boardFontName, FontWeight.BOLD, (getMinTileDimension() / 2)));
+            }
+            else {
+                tileText.setFont(new Font(boardFontName, (getMinTileDimension() / 2)));
+            }
         });
 
         // Add a listener that sets tile text to visible only if the value is 1-9

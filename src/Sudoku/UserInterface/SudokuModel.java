@@ -132,6 +132,10 @@ public class SudokuModel {
         }
     }
 
+    public boolean getTileEmpty(Coordinates coordinates) {
+        return SudokuTile.getTileByCoordinates(coordinates).isEmpty();
+    }
+
     public void updateFill(Coordinates coordinates) {
         if (getTileClicked(coordinates)) {
             setColorClicked(coordinates);
