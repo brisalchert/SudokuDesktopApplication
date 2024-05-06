@@ -122,11 +122,11 @@ public class SudokuModel {
                 int value = Integer.parseInt(keyEvent.getText());
 
                 // Assign the input to the current tile
-                SudokuTile.getTileByCoordinates(getLastClickedTile()).setValue(value);
+                puzzleGenerator.setTileValue(getLastClickedTile(), value);
             }
             else {
                 if (keyEvent.getCode() == KeyCode.BACK_SPACE) {
-                    SudokuTile.getTileByCoordinates(getLastClickedTile()).setValue(0);
+                    puzzleGenerator.setTileValue(getLastClickedTile(), 0);
                 }
             }
         }

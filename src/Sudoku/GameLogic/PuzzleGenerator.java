@@ -24,6 +24,16 @@ public class PuzzleGenerator {
         return this.tileGrid;
     }
 
+    public void setTileValue(Coordinates coordinates, int value) {
+        SudokuTile tile = SudokuTile.getTileByCoordinates(coordinates);
+
+        if (tile != null) {
+            if (tile.getEditable()) {
+                tile.setValue(value);
+            }
+        }
+    }
+
     /**
      * Initializes the SudokuTile objects in the tileGrid
      */

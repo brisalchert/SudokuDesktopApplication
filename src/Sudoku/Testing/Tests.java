@@ -2,6 +2,7 @@ package Sudoku.Testing;
 
 import Sudoku.GameLogic.PuzzleGenerator;
 import Sudoku.GameLogic.SudokuTile;
+import Sudoku.UserInterface.Coordinates;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -10,6 +11,15 @@ import java.util.List;
 import java.util.Random;
 
 public class Tests {
+    private PuzzleGenerator puzzleGenerator;
+
+    /**
+     * Constructor: creates a new Tests instance with a new generated puzzle
+     */
+    public Tests() {
+        puzzleGenerator = new PuzzleGenerator(25);
+    }
+
     /**
      * Prepares a random relevant tile to be invalidated by the placement of candidate in tileToFill
      * @param tileToFill the tile whose value will be candidate
@@ -77,7 +87,7 @@ public class Tests {
      * Generates a certain number of Sudoku grids and reports back the minimum, maximum, and average runtimes
      * @param numGrids the number of Sudoku grids to generate
      */
-    public static void generateGrids(int numGrids, int minimumClues) {
+    public void generateGrids(int numGrids, int minimumClues) {
         ArrayList<Long> generationTimes = new ArrayList<>(numGrids);
         DecimalFormat twoPlaces = new DecimalFormat("0.00");
         long minimum;
@@ -130,13 +140,13 @@ public class Tests {
     /**
      * Removes all values in the tileGrid, setting them to null
      */
-    private static void emptyTileGrid() {
+    private void emptyTileGrid() {
         SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
 
         // Remove all values
         for (SudokuTile[] column : tileGrid) {
             for (SudokuTile tile : column) {
-                tile.setValue(0);
+                puzzleGenerator.setTileValue(tile.getCoordinates(), 0);
             }
         }
     }
@@ -145,16 +155,17 @@ public class Tests {
      * Sets all the values on the board using a 2D-array of values, where 0 specifies an empty tile
      * @param boardValues the 2D-array of values to fill the board with
      */
-    public static void setBoard(int[][] boardValues) {
+    public void setBoard(int[][] boardValues) {
         SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
 
         for (int columnIndex = 0; columnIndex < tileGrid.length; columnIndex++) {
             for (int rowIndex = 0; rowIndex < tileGrid[columnIndex].length; rowIndex++) {
                 if (boardValues[rowIndex][columnIndex] != 0) {
-                    tileGrid[columnIndex][rowIndex].setValue(boardValues[rowIndex][columnIndex]);
+                    puzzleGenerator.setTileValue(new Coordinates(columnIndex, rowIndex),
+                            boardValues[rowIndex][columnIndex]);
                 }
                 else {
-                    tileGrid[columnIndex][rowIndex].setValue(0);
+                    puzzleGenerator.setTileValue(new Coordinates(columnIndex, rowIndex), 0);
                 }
             }
         }

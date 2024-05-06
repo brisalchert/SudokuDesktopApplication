@@ -18,6 +18,7 @@ public class SudokuTile {
     private static SudokuTile lastClickedTile;
     // First coordinate is row, second coordinate is column
     private final Coordinates coordinates;
+    private boolean editable = true;
     private SimpleIntegerProperty valueProperty = new SimpleIntegerProperty();
     private StringBuilder candidates = new StringBuilder();
     private SimpleBooleanProperty clickedProperty = new SimpleBooleanProperty(false);
@@ -341,7 +342,7 @@ public class SudokuTile {
      * Sets the value associated with the SudokuTile and displays it if it is not 0
      * @param value the value to set for the SudokuTile
      */
-    public void setValue(int value) {
+    protected void setValue(int value) {
         // Do not accept a value not in the range 1-9 unless it is 0
         if (value == 0 || (value >= 1 && value <= 9)) {
             this.valueProperty.set(value);
@@ -354,6 +355,22 @@ public class SudokuTile {
      */
     public SimpleIntegerProperty valueProperty() {
         return valueProperty;
+    }
+
+    /**
+     * Gets the value corresponding to whether the tile is editable
+     * @return the boolean value of editable
+     */
+    public boolean getEditable() {
+        return editable;
+    }
+
+    /**
+     * Sets the editable value for the tile
+     * @param editable the new value for whether the tile is editable
+     */
+    protected void setEditable(boolean editable) {
+        this.editable = editable;
     }
 
     /**
