@@ -302,6 +302,14 @@ public class PuzzleView {
         tileText.textProperty().addListener((observable, oldText, newText) ->
                 puzzleController.updateTileText(tileText, newText));
 
+        // Bind the tile's fill color to the tile validity from the model
+        if (tileText.getStyle().equals("-fx-font-weight: bold")) {
+            puzzleController.bindClueTileTextFill(tileText, coordinates);
+        }
+        else {
+            puzzleController.bindNonClueTileTextFill(tileText, coordinates);
+        }
+
         // Bind the tile's textProperty to the actual value from the model
         puzzleController.bindTileText(tileText, coordinates);
 

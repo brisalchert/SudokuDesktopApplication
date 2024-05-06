@@ -24,6 +24,7 @@ public class SudokuTile {
     private SimpleBooleanProperty clickedProperty = new SimpleBooleanProperty(false);
     private SimpleBooleanProperty relevantProperty = new SimpleBooleanProperty(false);
     private SimpleBooleanProperty hoveredProperty = new SimpleBooleanProperty(false);
+    private SimpleBooleanProperty validProperty = new SimpleBooleanProperty(true);
     private final Color TILE_NEUTRAL_COLOR = Color.rgb(0, 0, 0, 0.0);
     private final Color TILE_RELEVANT_COLOR = Color.rgb(0, 0, 0, 0.1);
     private final Color TILE_HOVERED_COLOR = Color.rgb(0, 0, 0, 0.25);
@@ -459,6 +460,30 @@ public class SudokuTile {
      */
     public SimpleBooleanProperty hoveredProperty() {
         return hoveredProperty;
+    }
+
+    /**
+     * Gets the value of the tile's validProperty
+     * @return the value of the tile's validProperty
+     */
+    public boolean getValid() {
+        return validProperty.get();
+    }
+
+    /**
+     * Sets the value of the tile's validProperty
+     * @param valid the new value for the tile's validProperty
+     */
+    public void setValid(boolean valid) {
+        validProperty.set(valid);
+    }
+
+    /**
+     * Gets a reference to the tile's validProperty
+     * @return the tile's validProperty itself
+     */
+    public SimpleBooleanProperty validProperty() {
+        return validProperty;
     }
 
     public void setRelevantTiles() {

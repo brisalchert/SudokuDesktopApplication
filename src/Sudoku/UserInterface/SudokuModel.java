@@ -129,6 +129,9 @@ public class SudokuModel {
                     puzzleGenerator.setTileValue(getLastClickedTile(), 0);
                 }
             }
+
+            // Update invalid tiles
+            puzzleGenerator.updateInvalidTiles(getLastClickedTile());
         }
     }
 
@@ -224,5 +227,9 @@ public class SudokuModel {
 
     public ObjectProperty<Color> tileColorProperty(Coordinates coordinates) {
         return SudokuTile.getTileByCoordinates(coordinates).colorProperty();
+    }
+
+    public SimpleBooleanProperty tileValidProperty(Coordinates coordinates) {
+        return SudokuTile.getTileByCoordinates(coordinates).validProperty();
     }
 }

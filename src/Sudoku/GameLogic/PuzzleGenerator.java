@@ -35,6 +35,122 @@ public class PuzzleGenerator {
     }
 
     /**
+     * Updates the validity of tiles relevant to the current tile (and itself)
+     * @param coordinates the coordinates of the current tile
+     */
+    public void updateInvalidTiles(Coordinates coordinates) {
+        // Unset relevant old invalid tiles
+        unsetInvalidTiles(coordinates);
+
+        // Set new relevant invalid tiles
+        setInvalidTiles(coordinates);
+    }
+
+    /**
+     * Sets invalidity for relevant tiles and the current tile if they are invalid
+     * @param coordinates the coordinates of the current tile
+     */
+    private void setInvalidTiles(Coordinates coordinates) {
+        SudokuTile tile = SudokuTile.getTileByCoordinates(coordinates);
+
+        // Check the row for invalid tiles
+        for (SudokuTile rowTile : tile.getRow()) {
+            if (!rowTile.equals(tile) && rowTile.getValue().equals(tile.getValue())) {
+                rowTile.setValid(false);
+                tile.setValid(false);
+            }
+        }
+
+        // Check the column for invalid tiles
+        for (SudokuTile columnTile : tile.getColumn()) {
+            if (!columnTile.equals(tile) && columnTile.getValue().equals(tile.getValue())) {
+                columnTile.setValid(false);
+                tile.setValid(false);
+            }
+        }
+
+        // Check the box for invalid tiles
+        for (SudokuTile boxTile : tile.getBox()) {
+            if (!boxTile.equals(tile) && boxTile.getValue().equals(tile.getValue())) {
+                boxTile.setValid(false);
+                tile.setValid(false);
+            }
+        }
+    }
+
+    /**
+     * Unsets invalidity for relevant tiles that are no longer invalid
+     * @param coordinates the coordinates of the current tile
+     */
+    private void unsetInvalidTiles(Coordinates coordinates) {
+        SudokuTile tile = SudokuTile.getTileByCoordinates(coordinates);
+
+        // Check previously invalid tiles in the row
+        for (SudokuTile rowTile : tile.getRow()) {
+            if (!rowTile.getValid()) {
+                if (!relevantTilesHaveValue(rowTile, rowTile.getValue())) {
+                    rowTile.setValid(true);
+                }
+            }
+        }
+
+        // Check previously invalid tiles in the column
+        for (SudokuTile columnTile : tile.getColumn()) {
+            if (!columnTile.getValid()) {
+                if (!relevantTilesHaveValue(columnTile, columnTile.getValue())) {
+                    columnTile.setValid(true);
+                }
+            }
+        }
+
+        // Check previously invalid tiles in the box
+        for (SudokuTile boxTile : tile.getBox()) {
+            if (!boxTile.getValid()) {
+                if (!relevantTilesHaveValue(boxTile, boxTile.getValue())) {
+                    boxTile.setValid(true);
+                }
+            }
+        }
+
+        // Check if the current tile was emptied (and therefore should be valid again)
+        if (tile.isEmpty() && !tile.getValid()) {
+            tile.setValid(true);
+        }
+    }
+
+    /**
+     * Checks if tiles relevant to the given tile have a certain value
+     * @param tile the selected SudokuTile
+     * @param value the value to search for
+     * @return true if the value exists anywhere in the relevant tiles, false otherwise
+     */
+    private boolean relevantTilesHaveValue(SudokuTile tile, int value) {
+        // Check row for value
+        for (SudokuTile rowTile : tile.getRow()) {
+            if (!rowTile.equals(tile) && rowTile.getValue() == value) {
+                return true;
+            }
+        }
+
+        // Check column for value
+        for (SudokuTile columnTile : tile.getColumn()) {
+            if (!columnTile.equals(tile) && columnTile.getValue() == value) {
+                return true;
+            }
+        }
+
+        // Check box for value
+        for (SudokuTile boxTile : tile.getBox()) {
+            if (!boxTile.equals(tile) && boxTile.getValue() == value) {
+                return true;
+            }
+        }
+
+        // Return false if value was not found
+        return false;
+    }
+
+    /**
      * Initializes the SudokuTile objects in the tileGrid
      */
     private void initializeTileGrid() {

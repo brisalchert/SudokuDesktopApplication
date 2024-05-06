@@ -1,10 +1,12 @@
 package Sudoku.UserInterface;
 
+import javafx.beans.binding.Bindings;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -129,6 +131,16 @@ public class PuzzleController {
 
     public void bindTileFill(Rectangle tileTint, Coordinates coordinates) {
         tileTint.fillProperty().bind(sudokuModel.tileColorProperty(coordinates));
+    }
+
+    public void bindClueTileTextFill(Text tileText, Coordinates coordinates) {
+        tileText.fillProperty().bind(Bindings.when(sudokuModel.tileValidProperty(coordinates))
+                .then(Color.BLACK).otherwise(Color.RED));
+    }
+
+    public void bindNonClueTileTextFill(Text tileText, Coordinates coordinates) {
+        tileText.fillProperty().bind(Bindings.when(sudokuModel.tileValidProperty(coordinates))
+                .then(Color.rgb(72, 72, 72)).otherwise(Color.rgb(255, 72, 72)));
     }
 
     public void initMainMenuButton(Button mainMenuButton) {
