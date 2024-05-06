@@ -1,7 +1,9 @@
 package Sudoku.UserInterface;
 
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
 public class MenuController {
@@ -48,7 +50,21 @@ public class MenuController {
 
     public void initNewGameButton(Button newGameButton) {
         newGameButton.setOnAction(e -> {
-            PuzzleController puzzleController = new PuzzleController(sudokuModel, primaryStage, 25);
+            if (puzzleInstanceExists()) {
+                Alert newGameConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
+                newGameConfirmation.setTitle("Start New Game");
+                newGameConfirmation.setHeaderText(null);
+                newGameConfirmation.setGraphic(null);
+                newGameConfirmation.setContentText("Override current game and start new game?");
+                newGameConfirmation.showAndWait();
+
+                if (newGameConfirmation.getResult() == ButtonType.OK) {
+                    PuzzleController puzzleController = new PuzzleController(sudokuModel, primaryStage, 25);
+                }
+            }
+            else {
+                PuzzleController puzzleController = new PuzzleController(sudokuModel, primaryStage, 25);
+            }
         });
     }
 
