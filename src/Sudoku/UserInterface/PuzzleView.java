@@ -268,10 +268,12 @@ public class PuzzleView {
         Text tileText = new Text();
         Font tileFont = new Font(boardFontName, ((double) TILE_WIDTH_AND_HEIGHT / 2));
         tileText.setFont(tileFont);
+        tileText.setFill(Color.rgb(72, 72, 72));
 
-        // Set starting clues' text to bold
+        // Set starting clues' text to bold and color to Black
         if (!sudokuModel.getTileEmpty(coordinates)) {
             tileText.setStyle("-fx-font-weight: bold");
+            tileText.setFill(Color.BLACK);
         }
 
         // Add a listener to scale tile font size with window width
