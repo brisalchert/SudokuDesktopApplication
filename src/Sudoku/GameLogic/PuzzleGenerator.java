@@ -985,11 +985,17 @@ public class PuzzleGenerator {
 
         // If maxIterations is reached, return
         if (currentIteration == maxIterations) {
+            // Set the starting clues to not be editable
+            setFilledNotEditable();
+
             return lastIterationModified;
         }
 
         // If minimumClues is reached, return
         if ((filledCoordinates.size()) <= minimumClues) {
+            // Set the starting clues to not be editable
+            setFilledNotEditable();
+
             return lastIterationModified;
         }
 
@@ -1038,6 +1044,19 @@ public class PuzzleGenerator {
         }
         else {
             return removeClues(minimumClues, 1, (currentIteration + 1), maxIterations, lastIterationModified);
+        }
+    }
+
+    /**
+     * Sets all filled tiles in the board to be not editable
+     */
+    private void setFilledNotEditable() {
+        for (SudokuTile[] row : tileGrid) {
+            for (SudokuTile tile : row) {
+                if (!tile.isEmpty()) {
+                    tile.setEditable(false);
+                }
+            }
         }
     }
 

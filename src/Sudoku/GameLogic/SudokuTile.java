@@ -331,7 +331,7 @@ public class SudokuTile {
     }
 
     public boolean isEmpty() {
-        return getValue() == null;
+        return getValue() == null || getValue() == 0;
     }
 
     public Integer getValue() {
