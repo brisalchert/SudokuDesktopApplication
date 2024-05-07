@@ -3,6 +3,7 @@ package Sudoku.UserInterface;
 import javafx.beans.binding.Bindings;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -16,6 +17,7 @@ public class PuzzleController {
     private final SudokuModel sudokuModel;
     private final PuzzleView puzzleView;
     private final Stage primaryStage;
+    private boolean hasBeenSolved = false;
 
     /**
      * Constructor: Creates a new PuzzleController with a new puzzle with a certain minimum number of clues
@@ -82,6 +84,17 @@ public class PuzzleController {
         EventHandler<KeyEvent> eventHandler = keyEvent -> {
             if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED) {
                 sudokuModel.setValueLastClickedTile(keyEvent);
+
+                if (sudokuModel.isBoardSolved() && !hasBeenSolved) {
+                    Alert gameFinishedAlert = new Alert(Alert.AlertType.INFORMATION);
+                    gameFinishedAlert.setTitle("Congratulations!");
+                    gameFinishedAlert.setHeaderText(null);
+                    gameFinishedAlert.setGraphic(null);
+                    gameFinishedAlert.setContentText("Congratulations! You solved the puzzle!");
+                    gameFinishedAlert.showAndWait();
+
+                    hasBeenSolved = true;
+                }
             }
 
             keyEvent.consume();

@@ -9,6 +9,7 @@ public class PuzzleGenerator {
     private Set<Coordinates> filledCoordinates;
     private int solutionCount;
     private final SudokuTile[][] tileGrid = SudokuTile.getTileGrid();
+    private final int[][] solutionGrid = new int[9][9];
 
     /**
      * Constructor: Creates a PuzzleGenerator object and calls puzzle generation methods
@@ -44,6 +45,22 @@ public class PuzzleGenerator {
 
         // Set new relevant invalid tiles
         setInvalidTiles(coordinates);
+    }
+
+    /**
+     * Checks if the board is completely solved
+     * @return true if the board is solved, false otherwise
+     */
+    public boolean isBoardComplete() {
+        for (int row = 0; row < tileGrid.length; row++) {
+            for (int column = 0; column < tileGrid[row].length; column++) {
+                if (tileGrid[row][column].getValue() != solutionGrid[row][column]) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -172,6 +189,13 @@ public class PuzzleGenerator {
         // Attempt to fill the grid, restarting from scratch if an invalid triple (rarely) occurs
         try {
             fillGrid();
+
+            // Store the solution to the puzzle in solutionGrid
+            for (int row = 0; row < tileGrid.length; row++) {
+                for (int column = 0; column < tileGrid[row].length; column++) {
+                    solutionGrid[row][column] = tileGrid[row][column].getValue();
+                }
+            }
         }
         catch (EmptyStackException error) {
             initializeFullGrid();

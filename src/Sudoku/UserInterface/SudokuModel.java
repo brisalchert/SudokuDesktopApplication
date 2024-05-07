@@ -135,6 +135,10 @@ public class SudokuModel {
         }
     }
 
+    public boolean isBoardSolved() {
+        return puzzleGenerator.isBoardComplete();
+    }
+
     public boolean getTileEmpty(Coordinates coordinates) {
         return SudokuTile.getTileByCoordinates(coordinates).isEmpty();
     }
